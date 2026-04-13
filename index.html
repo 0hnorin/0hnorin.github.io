@@ -1,0 +1,973 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>0hnorin</title>
+  <meta name="description" content="0hnorin — Small rooms, full bands. 서울에서 쓰고 부르는 싱어송라이터.">
+  <meta property="og:title" content="0hnorin">
+  <meta property="og:description" content="Small rooms, full bands.">
+  <meta property="og:type" content="website">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #080808;
+      --surface: #111111;
+      --border: rgba(255,255,255,0.08);
+      --border-strong: rgba(255,255,255,0.2);
+      --text-primary: #f0ede8;
+      --text-sub: rgba(240,237,232,0.62);
+      --text-muted: rgba(240,237,232,0.4);
+      --text-hint: rgba(240,237,232,0.28);
+      --accent: #ffffff;
+      --font-display: 'Inter', 'Pretendard', -apple-system, sans-serif;
+      --font-body: 'Pretendard', 'Inter', -apple-system, sans-serif;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text-primary);
+      font-family: var(--font-body);
+      font-weight: 300;
+      min-height: 100vh;
+      overflow-x: hidden;
+      cursor: none;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 9999;
+      opacity: 0.4;
+    }
+
+    .cursor {
+      position: fixed; width: 6px; height: 6px;
+      background: var(--text-primary); border-radius: 50%;
+      pointer-events: none; z-index: 10000;
+      transform: translate(-50%, -50%);
+      transition: transform 0.1s ease;
+    }
+    .cursor-ring {
+      position: fixed; width: 32px; height: 32px;
+      border: 1px solid rgba(240,237,232,0.35); border-radius: 50%;
+      pointer-events: none; z-index: 9999;
+      transform: translate(-50%, -50%);
+      transition: all 0.18s ease;
+    }
+
+    .container { max-width: 880px; margin: 0 auto; padding: 0 40px; }
+
+    /* nav */
+    nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; padding: 32px 0; }
+    .nav-inner { display: flex; justify-content: space-between; align-items: center; }
+    .nav-logo {
+      font-family: var(--font-display);
+      font-size: 1.05rem;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      color: var(--text-primary);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      opacity: 0; animation: fadeUp 1s ease 0.2s forwards;
+    }
+    .nav-logo img {
+      width: 28px;
+      height: 28px;
+      object-fit: contain;
+      display: block;
+    }
+    .nav-tag {
+      font-size: 0.68rem; letter-spacing: 0.22em;
+      color: var(--text-muted); text-transform: uppercase;
+      font-weight: 400;
+      opacity: 0; animation: fadeUp 1s ease 0.4s forwards;
+    }
+
+    /* hero */
+    .hero {
+      min-height: 100vh; display: flex; flex-direction: column;
+      justify-content: flex-end; padding-bottom: 96px; padding-top: 120px;
+      position: relative;
+    }
+    .hero-eyebrow {
+      font-size: 0.68rem; letter-spacing: 0.3em; color: var(--text-muted);
+      text-transform: uppercase; font-weight: 500; margin-bottom: 28px;
+      opacity: 0; animation: fadeUp 1s ease 0.5s forwards;
+    }
+    .hero-name {
+      font-family: var(--font-display);
+      font-size: clamp(4.5rem, 14vw, 10rem);
+      font-weight: 200;
+      line-height: 0.95;
+      letter-spacing: -0.045em;
+      color: var(--text-primary);
+      opacity: 0; animation: fadeUp 1.2s ease 0.6s forwards;
+    }
+    .hero-tagline {
+      margin-top: 44px;
+      font-family: var(--font-display);
+      font-size: 1.35rem;
+      letter-spacing: -0.01em;
+      color: var(--text-sub);
+      line-height: 1.4;
+      font-weight: 300;
+      opacity: 0; animation: fadeUp 1s ease 0.9s forwards;
+    }
+    .hero-scroll {
+      position: absolute; bottom: 48px; right: 40px;
+      font-size: 0.62rem; letter-spacing: 0.3em; font-weight: 500;
+      color: var(--text-hint); text-transform: uppercase;
+      writing-mode: vertical-rl;
+      opacity: 0; animation: fadeUp 1s ease 1.2s forwards;
+    }
+
+    .divider { height: 1px; background: var(--border); }
+
+    /* sections */
+    section { padding: 112px 0; }
+    .about-first { padding-top: 180px; }
+
+    /* top links bar */
+    .links-bar {
+      padding: 180px 0 72px;
+    }
+    .links-bar-inner {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 40px 56px;
+      align-items: flex-start;
+    }
+    .links-group {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+    .links-group-label {
+      font-size: 0.62rem;
+      letter-spacing: 0.32em;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      font-weight: 500;
+    }
+    .links-icons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .link-icon {
+      display: flex; align-items: center; justify-content: center;
+      width: 36px; height: 36px;
+      border: 1px solid var(--border);
+      border-radius: 50%;
+      text-decoration: none;
+      color: var(--text-sub);
+      transition: all 0.25s ease;
+      font-family: var(--font-display);
+      font-size: 0.68rem;
+      font-weight: 500;
+      letter-spacing: 0.02em;
+    }
+    .link-icon:hover {
+      border-color: var(--text-primary);
+      color: var(--text-primary);
+      transform: translateY(-2px);
+    }
+    .link-icon svg {
+      width: 15px; height: 15px;
+      fill: currentColor;
+    }
+    .section-label {
+      font-size: 0.66rem; letter-spacing: 0.32em;
+      color: var(--text-muted); text-transform: uppercase;
+      font-weight: 500;
+      margin-bottom: 56px; display: flex; align-items: center; gap: 20px;
+    }
+    .section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+    .section-index {
+      color: var(--text-hint);
+      font-weight: 400;
+    }
+
+    /* bio */
+    .bio-layout {
+      display: grid; grid-template-columns: 1fr 1px 1.2fr;
+      gap: 0 56px; align-items: start;
+    }
+    .bio-img-wrap {
+      position: relative; aspect-ratio: 3/4; overflow: hidden;
+      background: var(--surface); border: 1px solid var(--border);
+    }
+    .bio-img-wrap img {
+      width: 100%; height: 100%; object-fit: cover; display: block;
+      filter: grayscale(0.15) brightness(0.95);
+      transition: filter 0.4s ease;
+    }
+    .bio-img-wrap:hover img {
+      filter: grayscale(0) brightness(1);
+    }
+    .bio-divider-v { background: var(--border); }
+    .bio-text-wrap { display: flex; flex-direction: column; gap: 32px; }
+    .bio-text {
+      font-family: var(--font-body);
+      font-size: 1.02rem;
+      font-weight: 300;
+      line-height: 1.95;
+      color: var(--text-sub);
+      letter-spacing: -0.005em;
+      word-break: keep-all;
+    }
+    .bio-text strong {
+      color: var(--text-primary);
+      font-weight: 500;
+    }
+    .bio-detail {
+      font-size: 0.74rem;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      line-height: 2.1;
+      font-weight: 400;
+    }
+    .bio-detail span { color: var(--text-hint); margin-right: 10px; }
+    .bio-email {
+      color: inherit;
+      text-decoration: none;
+      transition: color 0.2s ease;
+    }
+    .bio-email:hover {
+      color: var(--text-primary);
+    }
+
+    /* discography grid */
+    .discography-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 56px 40px;
+    }
+    .release-card { display: flex; flex-direction: column; gap: 20px; }
+    .release-cover {
+      display: block; aspect-ratio: 1/1; background: var(--surface);
+      overflow: hidden; position: relative;
+      border: 1px solid var(--border); transition: border-color 0.3s ease;
+    }
+    .release-cover:hover { border-color: var(--border-strong); }
+    .release-cover img {
+      width: 100%; height: 100%; object-fit: cover; display: block;
+      transition: transform 0.6s ease;
+    }
+    .release-cover:hover img {
+      transform: scale(1.03);
+    }
+    .release-meta { display: flex; flex-direction: column; gap: 6px; }
+    .release-type {
+      font-size: 0.58rem; letter-spacing: 0.3em;
+      color: var(--text-muted); text-transform: uppercase;
+      font-weight: 500;
+    }
+    .release-title {
+      font-family: var(--font-display);
+      font-size: 1.15rem;
+      font-weight: 500;
+      color: var(--text-primary);
+      line-height: 1.3;
+      letter-spacing: -0.01em;
+      margin-top: 2px;
+    }
+    .release-tracklist {
+      font-size: 0.72rem;
+      letter-spacing: 0;
+      color: var(--text-muted);
+      line-height: 1.95;
+      margin-top: 6px;
+      font-weight: 400;
+    }
+    .release-tracklist .title-track {
+      color: var(--text-primary);
+      font-weight: 500;
+    }
+    .release-date {
+      font-size: 0.62rem;
+      letter-spacing: 0.22em;
+      color: var(--text-hint);
+      text-transform: uppercase;
+      font-weight: 500;
+      margin-top: 6px;
+    }
+    .release-links { display: flex; gap: 10px; margin-top: 6px; }
+    .release-link {
+      display: flex; align-items: center; justify-content: center;
+      width: 34px; height: 34px;
+      border: 1px solid var(--border); border-radius: 50%;
+      text-decoration: none; color: var(--text-muted);
+      transition: all 0.2s ease;
+    }
+    .release-link:hover {
+      border-color: var(--text-primary);
+      color: var(--text-primary);
+      transform: translateY(-2px);
+    }
+    .release-link svg { width: 16px; height: 16px; fill: currentColor; }
+
+    /* session list */
+    .session-list { display: flex; flex-direction: column; }
+    .session-item {
+      display: grid;
+      grid-template-columns: 100px 1fr auto;
+      align-items: center; gap: 20px;
+      padding: 22px 0;
+      border-bottom: 1px solid var(--border);
+      text-decoration: none; color: var(--text-sub);
+      transition: color 0.2s ease;
+    }
+    .session-item:first-child { border-top: 1px solid var(--border); }
+    .session-item:hover { color: var(--text-primary); }
+    .session-item:hover .session-artist-name { color: var(--text-sub); }
+    .session-role {
+      font-size: 0.58rem; letter-spacing: 0.28em;
+      color: var(--text-muted); text-transform: uppercase;
+      line-height: 1.7;
+      font-weight: 500;
+    }
+    .session-info { display: flex; flex-direction: column; gap: 4px; }
+    .session-release-title {
+      font-family: var(--font-display);
+      font-size: 1rem;
+      font-weight: 500;
+      color: var(--text-primary);
+      line-height: 1.4;
+      letter-spacing: -0.005em;
+    }
+    .session-artist-name {
+      font-size: 0.76rem; letter-spacing: 0.02em;
+      color: var(--text-muted); transition: color 0.2s ease;
+      font-weight: 400;
+    }
+    .session-release-type {
+      font-size: 0.58rem; letter-spacing: 0.25em;
+      color: var(--text-hint);
+      text-transform: uppercase;
+      font-weight: 500;
+    }
+    .session-links { display: flex; gap: 8px; margin-top: 10px; }
+    .session-link {
+      display: flex; align-items: center; justify-content: center;
+      width: 28px; height: 28px;
+      border: 1px solid var(--border); border-radius: 50%;
+      text-decoration: none; color: var(--text-muted);
+      transition: all 0.2s ease;
+    }
+    .session-link:hover {
+      border-color: var(--text-primary);
+      color: var(--text-primary);
+      transform: translateY(-2px);
+    }
+    .session-link svg { width: 13px; height: 13px; fill: currentColor; }
+
+    /* footer */
+    footer {
+      padding: 96px 0 48px;
+      border-top: 1px solid var(--border); margin-top: 40px;
+    }
+    .footer-top {
+      display: flex; flex-direction: column;
+      gap: 56px; margin-bottom: 96px;
+    }
+    .footer-label {
+      font-size: 0.62rem; letter-spacing: 0.32em;
+      color: var(--text-muted); text-transform: uppercase;
+      font-weight: 500;
+      margin-bottom: 32px;
+    }
+    .footer-links { list-style: none; display: flex; flex-direction: column; gap: 16px; }
+    .footer-links a {
+      font-size: 0.8rem; letter-spacing: 0.12em;
+      color: var(--text-sub); text-decoration: none;
+      text-transform: uppercase; transition: color 0.2s ease;
+      display: inline-flex; align-items: center; gap: 10px;
+      font-weight: 400;
+    }
+    .footer-links a::before {
+      content: ''; width: 12px; height: 1px;
+      background: var(--border-strong); transition: all 0.2s ease;
+    }
+    .footer-links a:hover { color: var(--text-primary); }
+    .footer-links a:hover::before { width: 20px; background: var(--text-primary); }
+    .footer-bottom {
+      display: flex; justify-content: space-between;
+      align-items: center;
+    }
+    .footer-name {
+      font-family: var(--font-display);
+      font-size: 1rem; font-weight: 500;
+      letter-spacing: 0.08em; color: var(--text-muted);
+    }
+    .footer-copy {
+      font-size: 0.62rem; letter-spacing: 0.2em;
+      color: var(--text-hint); text-transform: uppercase;
+      font-weight: 400;
+    }
+
+    /* animations */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .reveal {
+      opacity: 0; transform: translateY(24px);
+      transition: opacity 0.8s ease, transform 0.8s ease;
+    }
+    .reveal.visible { opacity: 1; transform: none; }
+
+    /* responsive */
+    @media (max-width: 720px) {
+      .container { padding: 0 28px; }
+      .bio-layout { grid-template-columns: 1fr; gap: 40px; }
+      .bio-divider-v { display: none; }
+      .bio-img-wrap { aspect-ratio: 4/3; }
+      .discography-grid { grid-template-columns: repeat(2, 1fr); gap: 44px 24px; }
+      .footer-top { gap: 48px; }
+      .hero-name { font-size: clamp(3.5rem, 18vw, 6rem); }
+      .hero-scroll { right: 28px; }
+      section { padding: 80px 0; }
+      .about-first { padding-top: 130px; }
+      .links-bar { padding: 130px 0 56px; }
+      .links-bar-inner { gap: 32px 40px; }
+      .session-item { grid-template-columns: 80px 1fr; gap: 14px; }
+      .session-release-type { display: none; }
+    }
+    @media (max-width: 480px) {
+      .discography-grid { grid-template-columns: 1fr; }
+      body { cursor: auto; }
+      .cursor, .cursor-ring { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="cursor" id="cursor"></div>
+  <div class="cursor-ring" id="cursorRing"></div>
+
+  <nav>
+    <div class="container">
+      <div class="nav-inner">
+        <a href="#" class="nav-logo">
+          <img src="images/logo.png" alt="0hnorin logo">
+          <span>0hnorin</span>
+        </a>
+        <span class="nav-tag">Singer-Songwriter</span>
+      </div>
+    </div>
+  </nav>
+
+  <!-- TOP LINKS BAR -->
+  <section class="links-bar">
+    <div class="container">
+      <div class="links-bar-inner">
+        <div class="links-group">
+          <span class="links-group-label">follow</span>
+          <div class="links-icons">
+            <a href="https://www.instagram.com/0hnorin/" target="_blank" rel="noopener" class="link-icon" aria-label="Instagram" title="Instagram">
+              <svg viewBox="0 0 24 24"><path fill="currentColor" d="M12 2.982c2.937 0 3.285.011 4.445.064a6.087 6.087 0 0 1 2.042.379 3.408 3.408 0 0 1 1.265.823 3.408 3.408 0 0 1 .823 1.265 6.087 6.087 0 0 1 .379 2.042c.053 1.16.064 1.508.064 4.445s-.011 3.285-.064 4.445a6.087 6.087 0 0 1-.379 2.042 3.643 3.643 0 0 1-2.088 2.088 6.087 6.087 0 0 1-2.042.379c-1.16.053-1.507.064-4.445.064s-3.285-.011-4.445-.064a6.087 6.087 0 0 1-2.043-.379 3.408 3.408 0 0 1-1.264-.823 3.408 3.408 0 0 1-.823-1.265 6.087 6.087 0 0 1-.379-2.042c-.053-1.16-.064-1.508-.064-4.445s.011-3.285.064-4.445a6.087 6.087 0 0 1 .379-2.042 3.408 3.408 0 0 1 .823-1.265 3.408 3.408 0 0 1 1.265-.823 6.087 6.087 0 0 1 2.042-.379c1.16-.053 1.508-.064 4.445-.064M12 1c-2.987 0-3.362.013-4.535.066a8.074 8.074 0 0 0-2.67.511 5.392 5.392 0 0 0-1.949 1.27 5.392 5.392 0 0 0-1.269 1.948 8.074 8.074 0 0 0-.511 2.67C1.013 8.638 1 9.013 1 12s.013 3.362.066 4.535a8.074 8.074 0 0 0 .511 2.67 5.392 5.392 0 0 0 1.27 1.949 5.392 5.392 0 0 0 1.948 1.269 8.074 8.074 0 0 0 2.67.511C8.638 22.987 9.013 23 12 23s3.362-.013 4.535-.066a8.074 8.074 0 0 0 2.67-.511 5.625 5.625 0 0 0 3.218-3.218 8.074 8.074 0 0 0 .511-2.67C22.987 15.362 23 14.987 23 12s-.013-3.362-.066-4.535a8.074 8.074 0 0 0-.511-2.67 5.392 5.392 0 0 0-1.27-1.949 5.392 5.392 0 0 0-1.948-1.269 8.074 8.074 0 0 0-2.67-.511C15.362 1.013 14.987 1 12 1Zm0 5.351A5.649 5.649 0 1 0 17.649 12 5.649 5.649 0 0 0 12 6.351Zm0 9.316A3.667 3.667 0 1 1 15.667 12 3.667 3.667 0 0 1 12 15.667Zm5.872-10.859a1.32 1.32 0 1 0 1.32 1.32 1.32 1.32 0 0 0-1.32-1.32Z"/></svg>
+            </a>
+            <a href="https://www.youtube.com/@ohnorin" target="_blank" rel="noopener" class="link-icon" aria-label="YouTube" title="YouTube">
+              <svg viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+            </a>
+            <a href="https://soundcloud.com/ohnorin" target="_blank" rel="noopener" class="link-icon" aria-label="SoundCloud" title="SoundCloud">
+              <svg viewBox="0 0 24 24"><path d="M7 17.939h-1v-8.068c.308-.231.639-.429 1-.566v8.634zm3 0H9V8.500c-.328.266-.64.565-.915.910L8 9.400v8.539h1zm2 0h1V9.480a5 5 0 0 0-.57-.537l-.43.310V17.939zm2 0h1V11.5a4 4 0 0 0-1-1.29V17.939zm2 0h1V12a5 5 0 0 0-1-.83V17.939zm2 0h1V12.5a3 3 0 0 0-1-.39V17.939zM2 14.5c0 1.9 1.1 3.5 2.5 4.2V10.3C3.1 11 2 12.6 2 14.5zm18.5-1c-.6 0-1 .4-1 1s.4 1 1 1 1-.4 1-1-.4-1-1-1zM11 8a6 6 0 0 1 1-.09v-.41a7 7 0 0 0-1 .1V8zm8 0V17.939h1c1.657 0 3-1.343 3-3a3 3 0 0 0-4-2.816V8z"/></svg>
+            </a>
+            <a href="https://blog.naver.com/0hnorin" target="_blank" rel="noopener" class="link-icon" aria-label="Naver Blog" title="Naver Blog">
+              <svg viewBox="0 0 24 24"><path fill="currentColor" d="M16.273 12.845 7.376 0H0v24h7.726V11.156L16.624 24H24V0h-7.727v12.845Z"/></svg>
+            </a>
+          </div>
+        </div>
+
+        <div class="links-group">
+          <span class="links-group-label">listen on</span>
+          <div class="links-icons">
+            <a href="https://open.spotify.com/artist/3okCTpb91cO6xH9QujaC9Q" target="_blank" rel="noopener" class="link-icon" aria-label="Spotify" title="Spotify">
+              <svg viewBox="0 0 24 24"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141 4.32-1.26 9.72-.6 13.44 1.62.42.18.6.78.3 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>
+            </a>
+            <a href="https://music.apple.com/us/artist/norin/1725154222" target="_blank" rel="noopener" class="link-icon" aria-label="Apple Music" title="Apple Music">
+              <svg viewBox="0 0 24 24"><path d="M23.994 6.124a9.23 9.23 0 0 0-.24-2.19c-.317-1.31-1.062-2.31-2.18-3.043a5.022 5.022 0 0 0-1.877-.726 10.496 10.496 0 0 0-1.564-.15c-.04-.003-.083-.01-.124-.013H5.986c-.152.01-.303.017-.455.026-.747.043-1.49.123-2.193.4-1.336.53-2.3 1.452-2.865 2.78-.192.448-.292.925-.363 1.408-.056.392-.088.785-.1 1.18 0 .032-.007.062-.01.093v12.223c.01.14.017.283.027.424.05.815.154 1.624.497 2.373.65 1.42 1.738 2.353 3.234 2.801.42.127.856.187 1.293.228.555.053 1.11.06 1.667.06h11.03a12.5 12.5 0 0 0 1.57-.1c.822-.106 1.596-.35 2.296-.81a5.046 5.046 0 0 0 1.88-2.207c.186-.42.293-.87.37-1.324.113-.675.138-1.358.137-2.04-.002-3.8 0-7.595-.003-11.393zm-6.423 3.99v5.712c0 .417-.058.827-.244 1.206-.29.59-.76.962-1.388 1.14-.35.1-.706.157-1.07.173-.95.042-1.8-.335-2.22-1.175-.352-.7-.342-1.432.07-2.1.347-.564.89-.867 1.51-1.016.478-.115.965-.19 1.45-.27.376-.063.614-.278.676-.656a.628.628 0 0 0 .01-.14V8.32c0-.397-.05-.457-.442-.378l-5.04 1.03c-.088.018-.14.063-.168.153a.96.96 0 0 0-.023.252v7.396c0 .398-.05.79-.216 1.155-.31.676-.842 1.056-1.564 1.208-.384.08-.772.112-1.16.082-.727-.06-1.341-.344-1.727-.996-.352-.594-.336-1.222.016-1.824.307-.525.792-.848 1.375-1.01.44-.123.89-.21 1.342-.294.416-.077.66-.303.705-.728a.55.55 0 0 0 .005-.08V8.05c0-.48.1-.6.564-.696l6.836-1.46c.147-.03.296-.057.445-.063.392-.015.575.147.575.543v3.74z"/></svg>
+            </a>
+            <a href="https://music.youtube.com/channel/UCRBO6MD8ohL4sI2xyPhfSHQ" target="_blank" rel="noopener" class="link-icon" aria-label="YouTube Music" title="YouTube Music">
+              <svg viewBox="0 0 24 24"><path d="M12 0C5.376 0 0 5.376 0 12s5.376 12 12 12 12-5.376 12-12S18.624 0 12 0zm0 22.08C6.432 22.08 1.92 17.568 1.92 12S6.432 1.92 12 1.92 22.08 6.432 22.08 12 17.568 22.08 12 22.08zm0-18.24c-4.512 0-8.16 3.648-8.16 8.16s3.648 8.16 8.16 8.16 8.16-3.648 8.16-8.16-3.648-8.16-8.16-8.16zM9.6 16.32V7.68L16.32 12 9.6 16.32z"/></svg>
+            </a>
+            <a href="https://www.melon.com/artist/timeline.htm?artistId=3678657" target="_blank" rel="noopener" class="link-icon" aria-label="Melon" title="Melon">
+              <svg viewBox="0 0 400 400"><path fill="currentColor" d="M82.15 0h235.7C363.48 0 400 36.52 400 82.15v235.7C400 363.48 363.48 400 317.85 400H82.15C36.52 400 0 363.48 0 317.85V82.15C0 36.52 36.52 0 82.15 0zm109.75 129.96c-55.68 0-100.82 45.14-100.82 100.83 0 55.68 45.14 100.82 100.82 100.82 55.68 0 100.82-45.14 100.82-100.82 0-55.69-45.14-100.83-100.82-100.83zm0 56.81c24.27 0 44.01 19.74 44.01 44.02 0 24.27-19.74 44.01-44.01 44.01-24.27 0-44.01-19.74-44.01-44.01 0-24.28 19.74-44.02 44.01-44.02zm137.7 -37.51c20.92 0 37.9 -16.95 37.9 -37.89 0 -20.93 -16.98 -37.9 -37.9 -37.9 -20.93 0 -37.9 16.97 -37.9 37.9 0 20.94 16.97 37.89 37.9 37.89z"/></svg>
+            </a>
+            <a href="https://www.genie.co.kr/detail/artistInfo?xxnm=82305279" target="_blank" rel="noopener" class="link-icon" aria-label="Genie" title="Genie">
+              <svg viewBox="0 0 66 66"><path fill="currentColor" d="M41.415 8.66c1.524-.879 3.412.134 3.574 1.833l.01.235V45.67c0 6.613-5.469 11.992-12.191 11.992-3.39 0-6.655-1.404-8.957-3.854a3.952 3.952 0 0 1 .177-5.59 3.96 3.96 0 0 1 5.361-.05l.232.227a4.321 4.321 0 0 0 3.187 1.359c2.256 0 4.11-1.676 4.267-3.792l.01-.292v-2.1a8.869 8.869 0 0 1-4.085.997c-6.47 0-11.76-5.143-11.992-11.553l-.008-.44V20.897c0-6.612 5.383-11.992 12-11.992 1.745 0 3.334.502 4.742 1.366l.417.27zM33 16.814a4.09 4.09 0 0 0-4.076 3.792l-.01.291v11.68A4.09 4.09 0 0 0 33 36.657c2.677 0 3.97-2.04 4.078-4.084l.008-.278V21.177c0-2.132-1.287-4.364-4.086-4.364z"/></svg>
+            </a>
+            <a href="https://music.bugs.co.kr/artist/20202364" target="_blank" rel="noopener" class="link-icon" aria-label="Bugs" title="Bugs">
+              <svg viewBox="0 0 81 108"><path fill="currentColor" d="M38,1c28.3-0.4,34.7,21.7,34.7,36.5S61.2,54.3,61.2,54.3C71.9,56,80.4,65.4,80.4,84.4 c0,19-18.4,20.1-18.4,20.1l-30.9,2.2L14.2,33.1c0-5.6,3.7-10.1,11-10.1c7.3,0,8.8,6.6,8.8,6.6l3.3,15.2c0,0,8.6,0,9.7,0 c1.1,0,9.6-2.1,6.6-14.8c-2.9-12.7-12.8-12.9-12.8-12.9s-15.6,0-23.5,0c-7.8,0-11.6-6.7-11.6-6.7L0,0L38,1z M45.8,89l9.2-0.8 c0,0,7.2-0.4,7.2-9.7c0-9.3-4.8-17.7-12.8-17.7h-8.8L45.8,89z"/></svg>
+            </a>
+            <a href="https://www.music-flo.com/detail/artist/408742079/track" target="_blank" rel="noopener" class="link-icon" aria-label="FLO" title="FLO">
+              <svg viewBox="0 0 360 360"><path fill="currentColor" d="M246.11 72.65c-1.23 0-4.48 2.15-8 3.79a79.39 79.39 0 0 1-10.58 3.94A60.51 60.51 0 0 1 208.19 83c-7.47 0-16.41-1.32-27.35-4.1q-7.4-1.89-14.91-3.24a83.92 83.92 0 0 0-14.6-1.45A82.25 82.25 0 0 0 132 76.45a74 74 0 0 0-18.75 7.3 3 3 0 0 0-1.53 2.77v34.41c0 1.48.68 2.16 1.85 2.16a3.14 3.14 0 0 0 1.63-.57 61.24 61.24 0 0 1 16.8-6.81 79 79 0 0 1 19.36-2.46 83.56 83.56 0 0 1 14.6 1.38c5.23.93 10.17 2.1 14.91 3.23 12.32 2.94 21.4 4.3 27.35 4.3a66.44 66.44 0 0 0 19.36-3.07 74.08 74.08 0 0 0 10.55-4.09 58 58 0 0 0 7.85-4.53 3 3 0 0 0 1.54-2.77V74.36c0-1.09-.37-1.71-1.41-1.71M245.06 150.43h-85.73q-21.53 0-34.58 13.06t-13.06 34.57v87a2.17 2.17 0 0 0 2.46 2.46h35a2.17 2.17 0 0 0 2.46-2.46v-79.31q0-7.38 4.3-11.68t11.68-4.3h77.44a2.17 2.17 0 0 0 2.46-2.46v-34.42a2.19 2.19 0 0 0-2.47-2.46"/></svg>
+            </a>
+            <a href="https://vibe.naver.com/artist/8275445" target="_blank" rel="noopener" class="link-icon" aria-label="VIBE" title="VIBE">
+              <svg viewBox="0 0 246 246"><path fill="currentColor" d="M116 110h14a2 2 0 0 1 2 2v79a2 2 0 0 1-2 2h-14a2 2 0 0 1-2-2v-79a2 2 0 0 1 2-2zm-25.33-28h14a2 2 0 0 1 2 2v79a2 2 0 0 1-2 2h-14a2 2 0 0 1-2-2V84a2 2 0 0 1 2-2zm50.66 0h14a2 2 0 0 1 2 2v79a2 2 0 0 1-2 2h-14a2 2 0 0 1-2-2V84a2 2 0 0 1 2-2zM65.33 57h14a2 2 0 0 1 2 2v79a2 2 0 0 1-2 2h-14a2 2 0 0 1-2-2V59a2 2 0 0 1 2-2zm101.34 0h14a2 2 0 0 1 2 2v79a2 2 0 0 1-2 2h-14a2 2 0 0 1-2-2V59a2 2 0 0 1 2-2zM192 72h14a2 2 0 0 1 2 2v39a2 2 0 0 1-2 2h-14a2 2 0 0 1-2-2V74a2 2 0 0 1 2-2zM40 72h14a2 2 0 0 1 2 2v39a2 2 0 0 1-2 2H40a2 2 0 0 1-2-2V74a2 2 0 0 1 2-2z"/></svg>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section id="about">
+    <div class="container">
+      <div class="section-label reveal"><span class="section-index">01</span> about</div>
+      <div class="bio-layout reveal">
+        <div class="bio-img-wrap">
+          <img src="images/profile.jpg" alt="0hnorin profile">
+        </div>
+        <div class="bio-divider-v"></div>
+        <div class="bio-text-wrap">
+          <p class="bio-text">
+            Somewhere in Seoul, writing alone, singing alone, finishing alone.<br><br>
+            <strong>norin</strong> is a name given by friends in high school.
+            No one remembers why — which means it can hold anything.<br><br>
+            Songs about the people you think about when you're not trying to.
+          </p>
+          <div class="bio-detail">
+            <div><span>—</span> Singer · Songwriter · Bassist</div>
+            <div><span>—</span> Seoul, Korea</div>
+            <div><span>—</span> <a href="mailto:ohnorin228@gmail.com" class="bio-email">ohnorin228@gmail.com</a></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- ORIGINAL WORKS -->
+  <section id="discography">
+    <div class="container">
+      <div class="section-label reveal"><span class="section-index">02</span> original works</div>
+      <div class="discography-grid reveal">
+
+        <!-- EP -->
+        <article class="release-card">
+          <div class="release-cover">
+            <img src="images/sand-castle.jpg" alt="모래 위에 지은 성">
+          </div>
+          <div class="release-meta">
+            <div class="release-type">EP · 5 Tracks</div>
+            <h3 class="release-title">모래 위에 지은 성</h3>
+            <div class="release-tracklist">
+              1. 틀린 마음<br>
+              2. Dancing<br>
+              3. <span class="title-track">빈 집</span><br>
+              4. 뚱이에게<br>
+              5. 막내아들
+            </div>
+            <div class="release-date">2023.12.27</div>
+          </div>
+          <div class="release-links">
+            <a href="https://open.spotify.com/album/2mGInar3XO4S5TTTYNium4" target="_blank" rel="noopener" class="release-link" aria-label="Spotify" title="Spotify">
+              <svg viewBox="0 0 24 24"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141 4.32-1.26 9.72-.6 13.44 1.62.42.18.6.78.3 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>
+            </a>
+            <a href="https://music.apple.com/kr/album/built-house-on-the-sand-ep/1722229259" target="_blank" rel="noopener" class="release-link" aria-label="Apple Music" title="Apple Music">
+              <svg viewBox="0 0 24 24"><path d="M23.994 6.124a9.23 9.23 0 0 0-.24-2.19c-.317-1.31-1.062-2.31-2.18-3.043a5.022 5.022 0 0 0-1.877-.726 10.496 10.496 0 0 0-1.564-.15c-.04-.003-.083-.01-.124-.013H5.986c-.152.01-.303.017-.455.026-.747.043-1.49.123-2.193.4-1.336.53-2.3 1.452-2.865 2.78-.192.448-.292.925-.363 1.408-.056.392-.088.785-.1 1.18 0 .032-.007.062-.01.093v12.223c.01.14.017.283.027.424.05.815.154 1.624.497 2.373.65 1.42 1.738 2.353 3.234 2.801.42.127.856.187 1.293.228.555.053 1.11.06 1.667.06h11.03a12.5 12.5 0 0 0 1.57-.1c.822-.106 1.596-.35 2.296-.81a5.046 5.046 0 0 0 1.88-2.207c.186-.42.293-.87.37-1.324.113-.675.138-1.358.137-2.04-.002-3.8 0-7.595-.003-11.393zm-6.423 3.99v5.712c0 .417-.058.827-.244 1.206-.29.59-.76.962-1.388 1.14-.35.1-.706.157-1.07.173-.95.042-1.8-.335-2.22-1.175-.352-.7-.342-1.432.07-2.1.347-.564.89-.867 1.51-1.016.478-.115.965-.19 1.45-.27.376-.063.614-.278.676-.656a.628.628 0 0 0 .01-.14V8.32c0-.397-.05-.457-.442-.378l-5.04 1.03c-.088.018-.14.063-.168.153a.96.96 0 0 0-.023.252v7.396c0 .398-.05.79-.216 1.155-.31.676-.842 1.056-1.564 1.208-.384.08-.772.112-1.16.082-.727-.06-1.341-.344-1.727-.996-.352-.594-.336-1.222.016-1.824.307-.525.792-.848 1.375-1.01.44-.123.89-.21 1.342-.294.416-.077.66-.303.705-.728a.55.55 0 0 0 .005-.08V8.05c0-.48.1-.6.564-.696l6.836-1.46c.147-.03.296-.057.445-.063.392-.015.575.147.575.543v3.74z"/></svg>
+            </a>
+            <a href="https://www.melon.com/album/detail.htm?albumId=11389459" target="_blank" rel="noopener" class="release-link" aria-label="Melon" title="Melon">
+              <svg viewBox="0 0 400 400"><path fill="currentColor" d="M82.15 0h235.7C363.48 0 400 36.52 400 82.15v235.7C400 363.48 363.48 400 317.85 400H82.15C36.52 400 0 363.48 0 317.85V82.15C0 36.52 36.52 0 82.15 0zm109.75 129.96c-55.68 0-100.82 45.14-100.82 100.83 0 55.68 45.14 100.82 100.82 100.82 55.68 0 100.82-45.14 100.82-100.82 0-55.69-45.14-100.83-100.82-100.83zm0 56.81c24.27 0 44.01 19.74 44.01 44.02 0 24.27-19.74 44.01-44.01 44.01-24.27 0-44.01-19.74-44.01-44.01 0-24.28 19.74-44.02 44.01-44.02zm137.7 -37.51c20.92 0 37.9 -16.95 37.9 -37.89 0 -20.93 -16.98 -37.9 -37.9 -37.9 -20.93 0 -37.9 16.97 -37.9 37.9 0 20.94 16.97 37.89 37.9 37.89z"/></svg>
+            </a>
+          </div>
+        </article>
+
+        <!-- SINGLE: Where are we go? -->
+        <article class="release-card">
+          <div class="release-cover">
+            <img src="images/where-are-we-go.jpg" alt="Where are we go?">
+          </div>
+          <div class="release-meta">
+            <div class="release-type">Single</div>
+            <h3 class="release-title">Where are we go?</h3>
+            <div class="release-date">2024.09.20</div>
+          </div>
+          <div class="release-links">
+            <a href="https://open.spotify.com/album/07Bjbw1qalVq3i8A7YQqFy" target="_blank" rel="noopener" class="release-link" aria-label="Spotify" title="Spotify">
+              <svg viewBox="0 0 24 24"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141 4.32-1.26 9.72-.6 13.44 1.62.42.18.6.78.3 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>
+            </a>
+            <a href="https://music.apple.com/kr/album/where-are-we-go-single/1767551297" target="_blank" rel="noopener" class="release-link" aria-label="Apple Music" title="Apple Music">
+              <svg viewBox="0 0 24 24"><path d="M23.994 6.124a9.23 9.23 0 0 0-.24-2.19c-.317-1.31-1.062-2.31-2.18-3.043a5.022 5.022 0 0 0-1.877-.726 10.496 10.496 0 0 0-1.564-.15c-.04-.003-.083-.01-.124-.013H5.986c-.152.01-.303.017-.455.026-.747.043-1.49.123-2.193.4-1.336.53-2.3 1.452-2.865 2.78-.192.448-.292.925-.363 1.408-.056.392-.088.785-.1 1.18 0 .032-.007.062-.01.093v12.223c.01.14.017.283.027.424.05.815.154 1.624.497 2.373.65 1.42 1.738 2.353 3.234 2.801.42.127.856.187 1.293.228.555.053 1.11.06 1.667.06h11.03a12.5 12.5 0 0 0 1.57-.1c.822-.106 1.596-.35 2.296-.81a5.046 5.046 0 0 0 1.88-2.207c.186-.42.293-.87.37-1.324.113-.675.138-1.358.137-2.04-.002-3.8 0-7.595-.003-11.393zm-6.423 3.99v5.712c0 .417-.058.827-.244 1.206-.29.59-.76.962-1.388 1.14-.35.1-.706.157-1.07.173-.95.042-1.8-.335-2.22-1.175-.352-.7-.342-1.432.07-2.1.347-.564.89-.867 1.51-1.016.478-.115.965-.19 1.45-.27.376-.063.614-.278.676-.656a.628.628 0 0 0 .01-.14V8.32c0-.397-.05-.457-.442-.378l-5.04 1.03c-.088.018-.14.063-.168.153a.96.96 0 0 0-.023.252v7.396c0 .398-.05.79-.216 1.155-.31.676-.842 1.056-1.564 1.208-.384.08-.772.112-1.16.082-.727-.06-1.341-.344-1.727-.996-.352-.594-.336-1.222.016-1.824.307-.525.792-.848 1.375-1.01.44-.123.89-.21 1.342-.294.416-.077.66-.303.705-.728a.55.55 0 0 0 .005-.08V8.05c0-.48.1-.6.564-.696l6.836-1.46c.147-.03.296-.057.445-.063.392-.015.575.147.575.543v3.74z"/></svg>
+            </a>
+            <a href="https://www.melon.com/album/detail.htm?albumId=11594982" target="_blank" rel="noopener" class="release-link" aria-label="Melon" title="Melon">
+              <svg viewBox="0 0 400 400"><path fill="currentColor" d="M82.15 0h235.7C363.48 0 400 36.52 400 82.15v235.7C400 363.48 363.48 400 317.85 400H82.15C36.52 400 0 363.48 0 317.85V82.15C0 36.52 36.52 0 82.15 0zm109.75 129.96c-55.68 0-100.82 45.14-100.82 100.83 0 55.68 45.14 100.82 100.82 100.82 55.68 0 100.82-45.14 100.82-100.82 0-55.69-45.14-100.83-100.82-100.83zm0 56.81c24.27 0 44.01 19.74 44.01 44.02 0 24.27-19.74 44.01-44.01 44.01-24.27 0-44.01-19.74-44.01-44.01 0-24.28 19.74-44.02 44.01-44.02zm137.7 -37.51c20.92 0 37.9 -16.95 37.9 -37.89 0 -20.93 -16.98 -37.9 -37.9 -37.9 -20.93 0 -37.9 16.97 -37.9 37.9 0 20.94 16.97 37.89 37.9 37.89z"/></svg>
+            </a>
+          </div>
+        </article>
+
+        <!-- SINGLE: 나도 이런 내가 싫어요 -->
+        <article class="release-card">
+          <div class="release-cover">
+            <img src="images/i-hate-myself.png" alt="나도 이런 내가 싫어요">
+          </div>
+          <div class="release-meta">
+            <div class="release-type">Single</div>
+            <h3 class="release-title">나도 이런 내가 싫어요</h3>
+            <div class="release-date">2025.01.10</div>
+          </div>
+          <div class="release-links">
+            <a href="https://open.spotify.com/album/1FfyC2M6gmgo6mQXgtIdIU" target="_blank" rel="noopener" class="release-link" aria-label="Spotify" title="Spotify">
+              <svg viewBox="0 0 24 24"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141 4.32-1.26 9.72-.6 13.44 1.62.42.18.6.78.3 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>
+            </a>
+            <a href="https://music.apple.com/kr/album/i-also-hate-myself-for-being-like-this-single/1789061258" target="_blank" rel="noopener" class="release-link" aria-label="Apple Music" title="Apple Music">
+              <svg viewBox="0 0 24 24"><path d="M23.994 6.124a9.23 9.23 0 0 0-.24-2.19c-.317-1.31-1.062-2.31-2.18-3.043a5.022 5.022 0 0 0-1.877-.726 10.496 10.496 0 0 0-1.564-.15c-.04-.003-.083-.01-.124-.013H5.986c-.152.01-.303.017-.455.026-.747.043-1.49.123-2.193.4-1.336.53-2.3 1.452-2.865 2.78-.192.448-.292.925-.363 1.408-.056.392-.088.785-.1 1.18 0 .032-.007.062-.01.093v12.223c.01.14.017.283.027.424.05.815.154 1.624.497 2.373.65 1.42 1.738 2.353 3.234 2.801.42.127.856.187 1.293.228.555.053 1.11.06 1.667.06h11.03a12.5 12.5 0 0 0 1.57-.1c.822-.106 1.596-.35 2.296-.81a5.046 5.046 0 0 0 1.88-2.207c.186-.42.293-.87.37-1.324.113-.675.138-1.358.137-2.04-.002-3.8 0-7.595-.003-11.393zm-6.423 3.99v5.712c0 .417-.058.827-.244 1.206-.29.59-.76.962-1.388 1.14-.35.1-.706.157-1.07.173-.95.042-1.8-.335-2.22-1.175-.352-.7-.342-1.432.07-2.1.347-.564.89-.867 1.51-1.016.478-.115.965-.19 1.45-.27.376-.063.614-.278.676-.656a.628.628 0 0 0 .01-.14V8.32c0-.397-.05-.457-.442-.378l-5.04 1.03c-.088.018-.14.063-.168.153a.96.96 0 0 0-.023.252v7.396c0 .398-.05.79-.216 1.155-.31.676-.842 1.056-1.564 1.208-.384.08-.772.112-1.16.082-.727-.06-1.341-.344-1.727-.996-.352-.594-.336-1.222.016-1.824.307-.525.792-.848 1.375-1.01.44-.123.89-.21 1.342-.294.416-.077.66-.303.705-.728a.55.55 0 0 0 .005-.08V8.05c0-.48.1-.6.564-.696l6.836-1.46c.147-.03.296-.057.445-.063.392-.015.575.147.575.543v3.74z"/></svg>
+            </a>
+            <a href="https://www.melon.com/album/detail.htm?albumId=11688665" target="_blank" rel="noopener" class="release-link" aria-label="Melon" title="Melon">
+              <svg viewBox="0 0 400 400"><path fill="currentColor" d="M82.15 0h235.7C363.48 0 400 36.52 400 82.15v235.7C400 363.48 363.48 400 317.85 400H82.15C36.52 400 0 363.48 0 317.85V82.15C0 36.52 36.52 0 82.15 0zm109.75 129.96c-55.68 0-100.82 45.14-100.82 100.83 0 55.68 45.14 100.82 100.82 100.82 55.68 0 100.82-45.14 100.82-100.82 0-55.69-45.14-100.83-100.82-100.83zm0 56.81c24.27 0 44.01 19.74 44.01 44.02 0 24.27-19.74 44.01-44.01 44.01-24.27 0-44.01-19.74-44.01-44.01 0-24.28 19.74-44.02 44.01-44.02zm137.7 -37.51c20.92 0 37.9 -16.95 37.9 -37.89 0 -20.93 -16.98 -37.9 -37.9 -37.9 -20.93 0 -37.9 16.97 -37.9 37.9 0 20.94 16.97 37.89 37.9 37.89z"/></svg>
+            </a>
+          </div>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- SESSION WORKS -->
+  <section id="session">
+    <div class="container">
+      <div class="section-label reveal"><span class="section-index">03</span> session works</div>
+      <div class="session-list reveal">
+
+        <!-- 1. 중이야 -->
+        <div class="session-item">
+          <div class="session-role">Bass</div>
+          <div class="session-info">
+            <span class="session-release-title">중이야</span>
+            <span class="session-artist-name">Pramasol(프라마솔) — 08844 (EP)</span>
+            <div class="session-links">
+              <a href="https://open.spotify.com/track/2W1Ue4YFm2rRsnXg3UoHP3" target="_blank" rel="noopener" class="session-link" aria-label="Spotify" title="Spotify">
+                <svg viewBox="0 0 24 24"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141 4.32-1.26 9.72-.6 13.44 1.62.42.18.6.78.3 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>
+              </a>
+              <a href="https://music.apple.com/kr/song/%EC%A4%91%EC%9D%B4%EC%95%BC-feat-ddyo-%EC%88%98%ED%98%84/1542768579" target="_blank" rel="noopener" class="session-link" aria-label="Apple Music" title="Apple Music">
+                <svg viewBox="0 0 24 24"><path d="M23.994 6.124a9.23 9.23 0 0 0-.24-2.19c-.317-1.31-1.062-2.31-2.18-3.043a5.022 5.022 0 0 0-1.877-.726 10.496 10.496 0 0 0-1.564-.15c-.04-.003-.083-.01-.124-.013H5.986c-.152.01-.303.017-.455.026-.747.043-1.49.123-2.193.4-1.336.53-2.3 1.452-2.865 2.78-.192.448-.292.925-.363 1.408-.056.392-.088.785-.1 1.18 0 .032-.007.062-.01.093v12.223c.01.14.017.283.027.424.05.815.154 1.624.497 2.373.65 1.42 1.738 2.353 3.234 2.801.42.127.856.187 1.293.228.555.053 1.11.06 1.667.06h11.03a12.5 12.5 0 0 0 1.57-.1c.822-.106 1.596-.35 2.296-.81a5.046 5.046 0 0 0 1.88-2.207c.186-.42.293-.87.37-1.324.113-.675.138-1.358.137-2.04-.002-3.8 0-7.595-.003-11.393zm-6.423 3.99v5.712c0 .417-.058.827-.244 1.206-.29.59-.76.962-1.388 1.14-.35.1-.706.157-1.07.173-.95.042-1.8-.335-2.22-1.175-.352-.7-.342-1.432.07-2.1.347-.564.89-.867 1.51-1.016.478-.115.965-.19 1.45-.27.376-.063.614-.278.676-.656a.628.628 0 0 0 .01-.14V8.32c0-.397-.05-.457-.442-.378l-5.04 1.03c-.088.018-.14.063-.168.153a.96.96 0 0 0-.023.252v7.396c0 .398-.05.79-.216 1.155-.31.676-.842 1.056-1.564 1.208-.384.08-.772.112-1.16.082-.727-.06-1.341-.344-1.727-.996-.352-.594-.336-1.222.016-1.824.307-.525.792-.848 1.375-1.01.44-.123.89-.21 1.342-.294.416-.077.66-.303.705-.728a.55.55 0 0 0 .005-.08V8.05c0-.48.1-.6.564-.696l6.836-1.46c.147-.03.296-.057.445-.063.392-.015.575.147.575.543v3.74z"/></svg>
+              </a>
+              <a href="https://www.melon.com/album/detail.htm?albumId=10527512" target="_blank" rel="noopener" class="session-link" aria-label="Melon" title="Melon">
+                <svg viewBox="0 0 400 400"><path fill="currentColor" d="M82.15 0h235.7C363.48 0 400 36.52 400 82.15v235.7C400 363.48 363.48 400 317.85 400H82.15C36.52 400 0 363.48 0 317.85V82.15C0 36.52 36.52 0 82.15 0zm109.75 129.96c-55.68 0-100.82 45.14-100.82 100.83 0 55.68 45.14 100.82 100.82 100.82 55.68 0 100.82-45.14 100.82-100.82 0-55.69-45.14-100.83-100.82-100.83zm0 56.81c24.27 0 44.01 19.74 44.01 44.02 0 24.27-19.74 44.01-44.01 44.01-24.27 0-44.01-19.74-44.01-44.01 0-24.28 19.74-44.02 44.01-44.02zm137.7 -37.51c20.92 0 37.9 -16.95 37.9 -37.89 0 -20.93 -16.98 -37.9 -37.9 -37.9 -20.93 0 -37.9 16.97 -37.9 37.9 0 20.94 16.97 37.89 37.9 37.89z"/></svg>
+              </a>
+            </div>
+          </div>
+          <span class="session-release-type">EP</span>
+        </div>
+
+        <!-- 2. noonchi.. -->
+        <div class="session-item">
+          <div class="session-role">Bass</div>
+          <div class="session-info">
+            <span class="session-release-title">noonchi..</span>
+            <span class="session-artist-name">nonebart, PEAK — hue… (EP)</span>
+            <div class="session-links">
+              <a href="https://open.spotify.com/track/0liJ25s2aX8SWmbqZmml6p" target="_blank" rel="noopener" class="session-link" aria-label="Spotify" title="Spotify">
+                <svg viewBox="0 0 24 24"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141 4.32-1.26 9.72-.6 13.44 1.62.42.18.6.78.3 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>
+              </a>
+              <a href="https://music.apple.com/kr/song/walk-on-eggshells/1590073665" target="_blank" rel="noopener" class="session-link" aria-label="Apple Music" title="Apple Music">
+                <svg viewBox="0 0 24 24"><path d="M23.994 6.124a9.23 9.23 0 0 0-.24-2.19c-.317-1.31-1.062-2.31-2.18-3.043a5.022 5.022 0 0 0-1.877-.726 10.496 10.496 0 0 0-1.564-.15c-.04-.003-.083-.01-.124-.013H5.986c-.152.01-.303.017-.455.026-.747.043-1.49.123-2.193.4-1.336.53-2.3 1.452-2.865 2.78-.192.448-.292.925-.363 1.408-.056.392-.088.785-.1 1.18 0 .032-.007.062-.01.093v12.223c.01.14.017.283.027.424.05.815.154 1.624.497 2.373.65 1.42 1.738 2.353 3.234 2.801.42.127.856.187 1.293.228.555.053 1.11.06 1.667.06h11.03a12.5 12.5 0 0 0 1.57-.1c.822-.106 1.596-.35 2.296-.81a5.046 5.046 0 0 0 1.88-2.207c.186-.42.293-.87.37-1.324.113-.675.138-1.358.137-2.04-.002-3.8 0-7.595-.003-11.393zm-6.423 3.99v5.712c0 .417-.058.827-.244 1.206-.29.59-.76.962-1.388 1.14-.35.1-.706.157-1.07.173-.95.042-1.8-.335-2.22-1.175-.352-.7-.342-1.432.07-2.1.347-.564.89-.867 1.51-1.016.478-.115.965-.19 1.45-.27.376-.063.614-.278.676-.656a.628.628 0 0 0 .01-.14V8.32c0-.397-.05-.457-.442-.378l-5.04 1.03c-.088.018-.14.063-.168.153a.96.96 0 0 0-.023.252v7.396c0 .398-.05.79-.216 1.155-.31.676-.842 1.056-1.564 1.208-.384.08-.772.112-1.16.082-.727-.06-1.341-.344-1.727-.996-.352-.594-.336-1.222.016-1.824.307-.525.792-.848 1.375-1.01.44-.123.89-.21 1.342-.294.416-.077.66-.303.705-.728a.55.55 0 0 0 .005-.08V8.05c0-.48.1-.6.564-.696l6.836-1.46c.147-.03.296-.057.445-.063.392-.015.575.147.575.543v3.74z"/></svg>
+              </a>
+              <a href="https://www.melon.com/album/detail.htm?albumId=10740170" target="_blank" rel="noopener" class="session-link" aria-label="Melon" title="Melon">
+                <svg viewBox="0 0 400 400"><path fill="currentColor" d="M82.15 0h235.7C363.48 0 400 36.52 400 82.15v235.7C400 363.48 363.48 400 317.85 400H82.15C36.52 400 0 363.48 0 317.85V82.15C0 36.52 36.52 0 82.15 0zm109.75 129.96c-55.68 0-100.82 45.14-100.82 100.83 0 55.68 45.14 100.82 100.82 100.82 55.68 0 100.82-45.14 100.82-100.82 0-55.69-45.14-100.83-100.82-100.83zm0 56.81c24.27 0 44.01 19.74 44.01 44.02 0 24.27-19.74 44.01-44.01 44.01-24.27 0-44.01-19.74-44.01-44.01 0-24.28 19.74-44.02 44.01-44.02zm137.7 -37.51c20.92 0 37.9 -16.95 37.9 -37.89 0 -20.93 -16.98 -37.9 -37.9 -37.9 -20.93 0 -37.9 16.97 -37.9 37.9 0 20.94 16.97 37.89 37.9 37.89z"/></svg>
+              </a>
+            </div>
+          </div>
+          <span class="session-release-type">EP</span>
+        </div>
+
+        <!-- 3. YY.. -->
+        <div class="session-item">
+          <div class="session-role">Bass</div>
+          <div class="session-info">
+            <span class="session-release-title">YY..</span>
+            <span class="session-artist-name">nonebart, PEAK — hue… (EP)</span>
+            <div class="session-links">
+              <a href="https://open.spotify.com/track/3jmhTgJXurcKI8FL86LAu4" target="_blank" rel="noopener" class="session-link" aria-label="Spotify" title="Spotify">
+                <svg viewBox="0 0 24 24"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141 4.32-1.26 9.72-.6 13.44 1.62.42.18.6.78.3 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>
+              </a>
+              <a href="https://music.apple.com/kr/song/yy-feat-mingginyu/1590073668" target="_blank" rel="noopener" class="session-link" aria-label="Apple Music" title="Apple Music">
+                <svg viewBox="0 0 24 24"><path d="M23.994 6.124a9.23 9.23 0 0 0-.24-2.19c-.317-1.31-1.062-2.31-2.18-3.043a5.022 5.022 0 0 0-1.877-.726 10.496 10.496 0 0 0-1.564-.15c-.04-.003-.083-.01-.124-.013H5.986c-.152.01-.303.017-.455.026-.747.043-1.49.123-2.193.4-1.336.53-2.3 1.452-2.865 2.78-.192.448-.292.925-.363 1.408-.056.392-.088.785-.1 1.18 0 .032-.007.062-.01.093v12.223c.01.14.017.283.027.424.05.815.154 1.624.497 2.373.65 1.42 1.738 2.353 3.234 2.801.42.127.856.187 1.293.228.555.053 1.11.06 1.667.06h11.03a12.5 12.5 0 0 0 1.57-.1c.822-.106 1.596-.35 2.296-.81a5.046 5.046 0 0 0 1.88-2.207c.186-.42.293-.87.37-1.324.113-.675.138-1.358.137-2.04-.002-3.8 0-7.595-.003-11.393zm-6.423 3.99v5.712c0 .417-.058.827-.244 1.206-.29.59-.76.962-1.388 1.14-.35.1-.706.157-1.07.173-.95.042-1.8-.335-2.22-1.175-.352-.7-.342-1.432.07-2.1.347-.564.89-.867 1.51-1.016.478-.115.965-.19 1.45-.27.376-.063.614-.278.676-.656a.628.628 0 0 0 .01-.14V8.32c0-.397-.05-.457-.442-.378l-5.04 1.03c-.088.018-.14.063-.168.153a.96.96 0 0 0-.023.252v7.396c0 .398-.05.79-.216 1.155-.31.676-.842 1.056-1.564 1.208-.384.08-.772.112-1.16.082-.727-.06-1.341-.344-1.727-.996-.352-.594-.336-1.222.016-1.824.307-.525.792-.848 1.375-1.01.44-.123.89-.21 1.342-.294.416-.077.66-.303.705-.728a.55.55 0 0 0 .005-.08V8.05c0-.48.1-.6.564-.696l6.836-1.46c.147-.03.296-.057.445-.063.392-.015.575.147.575.543v3.74z"/></svg>
+              </a>
+              <a href="https://www.melon.com/album/detail.htm?albumId=10740170" target="_blank" rel="noopener" class="session-link" aria-label="Melon" title="Melon">
+                <svg viewBox="0 0 400 400"><path fill="currentColor" d="M82.15 0h235.7C363.48 0 400 36.52 400 82.15v235.7C400 363.48 363.48 400 317.85 400H82.15C36.52 400 0 363.48 0 317.85V82.15C0 36.52 36.52 0 82.15 0zm109.75 129.96c-55.68 0-100.82 45.14-100.82 100.83 0 55.68 45.14 100.82 100.82 100.82 55.68 0 100.82-45.14 100.82-100.82 0-55.69-45.14-100.83-100.82-100.83zm0 56.81c24.27 0 44.01 19.74 44.01 44.02 0 24.27-19.74 44.01-44.01 44.01-24.27 0-44.01-19.74-44.01-44.01 0-24.28 19.74-44.02 44.01-44.02zm137.7 -37.51c20.92 0 37.9 -16.95 37.9 -37.89 0 -20.93 -16.98 -37.9 -37.9 -37.9 -20.93 0 -37.9 16.97 -37.9 37.9 0 20.94 16.97 37.89 37.9 37.89z"/></svg>
+              </a>
+            </div>
+          </div>
+          <span class="session-release-type">EP</span>
+        </div>
+
+        <!-- 4. 떠나가 -->
+        <div class="session-item">
+          <div class="session-role">Bass</div>
+          <div class="session-info">
+            <span class="session-release-title">떠나가 (Feat. 이지연)</span>
+            <span class="session-artist-name">와일로(Waillo)</span>
+            <div class="session-links">
+              <a href="https://open.spotify.com/track/5F2pQq9G5uDUGUMkJVZRUM" target="_blank" rel="noopener" class="session-link" aria-label="Spotify" title="Spotify">
+                <svg viewBox="0 0 24 24"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141 4.32-1.26 9.72-.6 13.44 1.62.42.18.6.78.3 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>
+              </a>
+              <a href="https://music.apple.com/kr/song/%EB%96%A0%EB%82%98%EA%B0%80-feat-%EC%9D%B4%EC%A7%80%EC%97%B0/1581730360" target="_blank" rel="noopener" class="session-link" aria-label="Apple Music" title="Apple Music">
+                <svg viewBox="0 0 24 24"><path d="M23.994 6.124a9.23 9.23 0 0 0-.24-2.19c-.317-1.31-1.062-2.31-2.18-3.043a5.022 5.022 0 0 0-1.877-.726 10.496 10.496 0 0 0-1.564-.15c-.04-.003-.083-.01-.124-.013H5.986c-.152.01-.303.017-.455.026-.747.043-1.49.123-2.193.4-1.336.53-2.3 1.452-2.865 2.78-.192.448-.292.925-.363 1.408-.056.392-.088.785-.1 1.18 0 .032-.007.062-.01.093v12.223c.01.14.017.283.027.424.05.815.154 1.624.497 2.373.65 1.42 1.738 2.353 3.234 2.801.42.127.856.187 1.293.228.555.053 1.11.06 1.667.06h11.03a12.5 12.5 0 0 0 1.57-.1c.822-.106 1.596-.35 2.296-.81a5.046 5.046 0 0 0 1.88-2.207c.186-.42.293-.87.37-1.324.113-.675.138-1.358.137-2.04-.002-3.8 0-7.595-.003-11.393zm-6.423 3.99v5.712c0 .417-.058.827-.244 1.206-.29.59-.76.962-1.388 1.14-.35.1-.706.157-1.07.173-.95.042-1.8-.335-2.22-1.175-.352-.7-.342-1.432.07-2.1.347-.564.89-.867 1.51-1.016.478-.115.965-.19 1.45-.27.376-.063.614-.278.676-.656a.628.628 0 0 0 .01-.14V8.32c0-.397-.05-.457-.442-.378l-5.04 1.03c-.088.018-.14.063-.168.153a.96.96 0 0 0-.023.252v7.396c0 .398-.05.79-.216 1.155-.31.676-.842 1.056-1.564 1.208-.384.08-.772.112-1.16.082-.727-.06-1.341-.344-1.727-.996-.352-.594-.336-1.222.016-1.824.307-.525.792-.848 1.375-1.01.44-.123.89-.21 1.342-.294.416-.077.66-.303.705-.728a.55.55 0 0 0 .005-.08V8.05c0-.48.1-.6.564-.696l6.836-1.46c.147-.03.296-.057.445-.063.392-.015.575.147.575.543v3.74z"/></svg>
+              </a>
+              <a href="https://www.melon.com/album/detail.htm?albumId=10684089" target="_blank" rel="noopener" class="session-link" aria-label="Melon" title="Melon">
+                <svg viewBox="0 0 400 400"><path fill="currentColor" d="M82.15 0h235.7C363.48 0 400 36.52 400 82.15v235.7C400 363.48 363.48 400 317.85 400H82.15C36.52 400 0 363.48 0 317.85V82.15C0 36.52 36.52 0 82.15 0zm109.75 129.96c-55.68 0-100.82 45.14-100.82 100.83 0 55.68 45.14 100.82 100.82 100.82 55.68 0 100.82-45.14 100.82-100.82 0-55.69-45.14-100.83-100.82-100.83zm0 56.81c24.27 0 44.01 19.74 44.01 44.02 0 24.27-19.74 44.01-44.01 44.01-24.27 0-44.01-19.74-44.01-44.01 0-24.28 19.74-44.02 44.01-44.02zm137.7 -37.51c20.92 0 37.9 -16.95 37.9 -37.89 0 -20.93 -16.98 -37.9 -37.9 -37.9 -20.93 0 -37.9 16.97 -37.9 37.9 0 20.94 16.97 37.89 37.9 37.89z"/></svg>
+              </a>
+            </div>
+          </div>
+          <span class="session-release-type">Single</span>
+        </div>
+
+        <!-- 5. Digital Nostalgia -->
+        <div class="session-item">
+          <div class="session-role">Bass</div>
+          <div class="session-info">
+            <span class="session-release-title">Digital Nostalgia</span>
+            <span class="session-artist-name">Pedals On Carpet</span>
+            <div class="session-links">
+              <a href="https://open.spotify.com/track/7l0i7eFXhIOoBr2waixqRD" target="_blank" rel="noopener" class="session-link" aria-label="Spotify" title="Spotify">
+                <svg viewBox="0 0 24 24"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141 4.32-1.26 9.72-.6 13.44 1.62.42.18.6.78.3 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>
+              </a>
+              <a href="https://music.apple.com/kr/song/digital-nostalgia/1734384046" target="_blank" rel="noopener" class="session-link" aria-label="Apple Music" title="Apple Music">
+                <svg viewBox="0 0 24 24"><path d="M23.994 6.124a9.23 9.23 0 0 0-.24-2.19c-.317-1.31-1.062-2.31-2.18-3.043a5.022 5.022 0 0 0-1.877-.726 10.496 10.496 0 0 0-1.564-.15c-.04-.003-.083-.01-.124-.013H5.986c-.152.01-.303.017-.455.026-.747.043-1.49.123-2.193.4-1.336.53-2.3 1.452-2.865 2.78-.192.448-.292.925-.363 1.408-.056.392-.088.785-.1 1.18 0 .032-.007.062-.01.093v12.223c.01.14.017.283.027.424.05.815.154 1.624.497 2.373.65 1.42 1.738 2.353 3.234 2.801.42.127.856.187 1.293.228.555.053 1.11.06 1.667.06h11.03a12.5 12.5 0 0 0 1.57-.1c.822-.106 1.596-.35 2.296-.81a5.046 5.046 0 0 0 1.88-2.207c.186-.42.293-.87.37-1.324.113-.675.138-1.358.137-2.04-.002-3.8 0-7.595-.003-11.393zm-6.423 3.99v5.712c0 .417-.058.827-.244 1.206-.29.59-.76.962-1.388 1.14-.35.1-.706.157-1.07.173-.95.042-1.8-.335-2.22-1.175-.352-.7-.342-1.432.07-2.1.347-.564.89-.867 1.51-1.016.478-.115.965-.19 1.45-.27.376-.063.614-.278.676-.656a.628.628 0 0 0 .01-.14V8.32c0-.397-.05-.457-.442-.378l-5.04 1.03c-.088.018-.14.063-.168.153a.96.96 0 0 0-.023.252v7.396c0 .398-.05.79-.216 1.155-.31.676-.842 1.056-1.564 1.208-.384.08-.772.112-1.16.082-.727-.06-1.341-.344-1.727-.996-.352-.594-.336-1.222.016-1.824.307-.525.792-.848 1.375-1.01.44-.123.89-.21 1.342-.294.416-.077.66-.303.705-.728a.55.55 0 0 0 .005-.08V8.05c0-.48.1-.6.564-.696l6.836-1.46c.147-.03.296-.057.445-.063.392-.015.575.147.575.543v3.74z"/></svg>
+              </a>
+              <a href="https://www.melon.com/album/detail.htm?albumId=11437392" target="_blank" rel="noopener" class="session-link" aria-label="Melon" title="Melon">
+                <svg viewBox="0 0 400 400"><path fill="currentColor" d="M82.15 0h235.7C363.48 0 400 36.52 400 82.15v235.7C400 363.48 363.48 400 317.85 400H82.15C36.52 400 0 363.48 0 317.85V82.15C0 36.52 36.52 0 82.15 0zm109.75 129.96c-55.68 0-100.82 45.14-100.82 100.83 0 55.68 45.14 100.82 100.82 100.82 55.68 0 100.82-45.14 100.82-100.82 0-55.69-45.14-100.83-100.82-100.83zm0 56.81c24.27 0 44.01 19.74 44.01 44.02 0 24.27-19.74 44.01-44.01 44.01-24.27 0-44.01-19.74-44.01-44.01 0-24.28 19.74-44.02 44.01-44.02zm137.7 -37.51c20.92 0 37.9 -16.95 37.9 -37.89 0 -20.93 -16.98 -37.9 -37.9 -37.9 -20.93 0 -37.9 16.97 -37.9 37.9 0 20.94 16.97 37.89 37.9 37.89z"/></svg>
+              </a>
+            </div>
+          </div>
+          <span class="session-release-type">Single</span>
+        </div>
+
+        <!-- 6. 꽃샘추위 -->
+        <div class="session-item">
+          <div class="session-role">Bass</div>
+          <div class="session-info">
+            <span class="session-release-title">꽃샘추위</span>
+            <span class="session-artist-name">Pedals On Carpet</span>
+            <div class="session-links">
+              <a href="https://open.spotify.com/track/608BG9k3MZvAMmAMMiqAM3" target="_blank" rel="noopener" class="session-link" aria-label="Spotify" title="Spotify">
+                <svg viewBox="0 0 24 24"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141 4.32-1.26 9.72-.6 13.44 1.62.42.18.6.78.3 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>
+              </a>
+              <a href="https://music.apple.com/kr/song/%EA%BD%83%EC%83%98%EC%B6%94%EC%9C%84/1770726359" target="_blank" rel="noopener" class="session-link" aria-label="Apple Music" title="Apple Music">
+                <svg viewBox="0 0 24 24"><path d="M23.994 6.124a9.23 9.23 0 0 0-.24-2.19c-.317-1.31-1.062-2.31-2.18-3.043a5.022 5.022 0 0 0-1.877-.726 10.496 10.496 0 0 0-1.564-.15c-.04-.003-.083-.01-.124-.013H5.986c-.152.01-.303.017-.455.026-.747.043-1.49.123-2.193.4-1.336.53-2.3 1.452-2.865 2.78-.192.448-.292.925-.363 1.408-.056.392-.088.785-.1 1.18 0 .032-.007.062-.01.093v12.223c.01.14.017.283.027.424.05.815.154 1.624.497 2.373.65 1.42 1.738 2.353 3.234 2.801.42.127.856.187 1.293.228.555.053 1.11.06 1.667.06h11.03a12.5 12.5 0 0 0 1.57-.1c.822-.106 1.596-.35 2.296-.81a5.046 5.046 0 0 0 1.88-2.207c.186-.42.293-.87.37-1.324.113-.675.138-1.358.137-2.04-.002-3.8 0-7.595-.003-11.393zm-6.423 3.99v5.712c0 .417-.058.827-.244 1.206-.29.59-.76.962-1.388 1.14-.35.1-.706.157-1.07.173-.95.042-1.8-.335-2.22-1.175-.352-.7-.342-1.432.07-2.1.347-.564.89-.867 1.51-1.016.478-.115.965-.19 1.45-.27.376-.063.614-.278.676-.656a.628.628 0 0 0 .01-.14V8.32c0-.397-.05-.457-.442-.378l-5.04 1.03c-.088.018-.14.063-.168.153a.96.96 0 0 0-.023.252v7.396c0 .398-.05.79-.216 1.155-.31.676-.842 1.056-1.564 1.208-.384.08-.772.112-1.16.082-.727-.06-1.341-.344-1.727-.996-.352-.594-.336-1.222.016-1.824.307-.525.792-.848 1.375-1.01.44-.123.89-.21 1.342-.294.416-.077.66-.303.705-.728a.55.55 0 0 0 .005-.08V8.05c0-.48.1-.6.564-.696l6.836-1.46c.147-.03.296-.057.445-.063.392-.015.575.147.575.543v3.74z"/></svg>
+              </a>
+              <a href="https://www.melon.com/album/detail.htm?albumId=11603885" target="_blank" rel="noopener" class="session-link" aria-label="Melon" title="Melon">
+                <svg viewBox="0 0 400 400"><path fill="currentColor" d="M82.15 0h235.7C363.48 0 400 36.52 400 82.15v235.7C400 363.48 363.48 400 317.85 400H82.15C36.52 400 0 363.48 0 317.85V82.15C0 36.52 36.52 0 82.15 0zm109.75 129.96c-55.68 0-100.82 45.14-100.82 100.83 0 55.68 45.14 100.82 100.82 100.82 55.68 0 100.82-45.14 100.82-100.82 0-55.69-45.14-100.83-100.82-100.83zm0 56.81c24.27 0 44.01 19.74 44.01 44.02 0 24.27-19.74 44.01-44.01 44.01-24.27 0-44.01-19.74-44.01-44.01 0-24.28 19.74-44.02 44.01-44.02zm137.7 -37.51c20.92 0 37.9 -16.95 37.9 -37.89 0 -20.93 -16.98 -37.9 -37.9 -37.9 -20.93 0 -37.9 16.97 -37.9 37.9 0 20.94 16.97 37.89 37.9 37.89z"/></svg>
+              </a>
+            </div>
+          </div>
+          <span class="session-release-type">Single</span>
+        </div>
+
+        <!-- 7. 추억이 파도가 되어 날 덮치면 -->
+        <div class="session-item">
+          <div class="session-role">Bass<br>Comp · Arr</div>
+          <div class="session-info">
+            <span class="session-release-title">추억이 파도가 되어 날 덮치면</span>
+            <span class="session-artist-name">네트라움(NETRAUM)</span>
+            <div class="session-links">
+              <a href="https://open.spotify.com/track/0h4vOaeCOeBbMXQFcQnlYX" target="_blank" rel="noopener" class="session-link" aria-label="Spotify" title="Spotify">
+                <svg viewBox="0 0 24 24"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141 4.32-1.26 9.72-.6 13.44 1.62.42.18.6.78.3 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>
+              </a>
+              <a href="https://music.apple.com/kr/song/%EC%B6%94%EC%96%B5%EC%9D%B4-%ED%8C%8C%EB%8F%84%EA%B0%80-%EB%90%98%EC%96%B4-%EB%82%A0-%EB%8D%AE%EC%B9%98%EB%A9%B4/1785806053" target="_blank" rel="noopener" class="session-link" aria-label="Apple Music" title="Apple Music">
+                <svg viewBox="0 0 24 24"><path d="M23.994 6.124a9.23 9.23 0 0 0-.24-2.19c-.317-1.31-1.062-2.31-2.18-3.043a5.022 5.022 0 0 0-1.877-.726 10.496 10.496 0 0 0-1.564-.15c-.04-.003-.083-.01-.124-.013H5.986c-.152.01-.303.017-.455.026-.747.043-1.49.123-2.193.4-1.336.53-2.3 1.452-2.865 2.78-.192.448-.292.925-.363 1.408-.056.392-.088.785-.1 1.18 0 .032-.007.062-.01.093v12.223c.01.14.017.283.027.424.05.815.154 1.624.497 2.373.65 1.42 1.738 2.353 3.234 2.801.42.127.856.187 1.293.228.555.053 1.11.06 1.667.06h11.03a12.5 12.5 0 0 0 1.57-.1c.822-.106 1.596-.35 2.296-.81a5.046 5.046 0 0 0 1.88-2.207c.186-.42.293-.87.37-1.324.113-.675.138-1.358.137-2.04-.002-3.8 0-7.595-.003-11.393zm-6.423 3.99v5.712c0 .417-.058.827-.244 1.206-.29.59-.76.962-1.388 1.14-.35.1-.706.157-1.07.173-.95.042-1.8-.335-2.22-1.175-.352-.7-.342-1.432.07-2.1.347-.564.89-.867 1.51-1.016.478-.115.965-.19 1.45-.27.376-.063.614-.278.676-.656a.628.628 0 0 0 .01-.14V8.32c0-.397-.05-.457-.442-.378l-5.04 1.03c-.088.018-.14.063-.168.153a.96.96 0 0 0-.023.252v7.396c0 .398-.05.79-.216 1.155-.31.676-.842 1.056-1.564 1.208-.384.08-.772.112-1.16.082-.727-.06-1.341-.344-1.727-.996-.352-.594-.336-1.222.016-1.824.307-.525.792-.848 1.375-1.01.44-.123.89-.21 1.342-.294.416-.077.66-.303.705-.728a.55.55 0 0 0 .005-.08V8.05c0-.48.1-.6.564-.696l6.836-1.46c.147-.03.296-.057.445-.063.392-.015.575.147.575.543v3.74z"/></svg>
+              </a>
+              <a href="https://www.melon.com/album/detail.htm?albumId=11675552" target="_blank" rel="noopener" class="session-link" aria-label="Melon" title="Melon">
+                <svg viewBox="0 0 400 400"><path fill="currentColor" d="M82.15 0h235.7C363.48 0 400 36.52 400 82.15v235.7C400 363.48 363.48 400 317.85 400H82.15C36.52 400 0 363.48 0 317.85V82.15C0 36.52 36.52 0 82.15 0zm109.75 129.96c-55.68 0-100.82 45.14-100.82 100.83 0 55.68 45.14 100.82 100.82 100.82 55.68 0 100.82-45.14 100.82-100.82 0-55.69-45.14-100.83-100.82-100.83zm0 56.81c24.27 0 44.01 19.74 44.01 44.02 0 24.27-19.74 44.01-44.01 44.01-24.27 0-44.01-19.74-44.01-44.01 0-24.28 19.74-44.02 44.01-44.02zm137.7 -37.51c20.92 0 37.9 -16.95 37.9 -37.89 0 -20.93 -16.98 -37.9 -37.9 -37.9 -20.93 0 -37.9 16.97 -37.9 37.9 0 20.94 16.97 37.89 37.9 37.89z"/></svg>
+              </a>
+            </div>
+          </div>
+          <span class="session-release-type">Single</span>
+        </div>
+
+        <!-- 8. Teacupstorm -->
+        <div class="session-item">
+          <div class="session-role">Bass</div>
+          <div class="session-info">
+            <span class="session-release-title">Teacupstorm (feat. 한오월)</span>
+            <span class="session-artist-name">라디오 939, Hakm(하킴) — HEADBUTTERS</span>
+            <div class="session-links">
+              <a href="https://open.spotify.com/track/3XCXVGjy2UMckwV3YaePSl" target="_blank" rel="noopener" class="session-link" aria-label="Spotify" title="Spotify">
+                <svg viewBox="0 0 24 24"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141 4.32-1.26 9.72-.6 13.44 1.62.42.18.6.78.3 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>
+              </a>
+              <a href="https://music.apple.com/kr/song/teacupstorm-feat-%ED%95%9C%EC%98%A4%EC%9B%94/1794510770" target="_blank" rel="noopener" class="session-link" aria-label="Apple Music" title="Apple Music">
+                <svg viewBox="0 0 24 24"><path d="M23.994 6.124a9.23 9.23 0 0 0-.24-2.19c-.317-1.31-1.062-2.31-2.18-3.043a5.022 5.022 0 0 0-1.877-.726 10.496 10.496 0 0 0-1.564-.15c-.04-.003-.083-.01-.124-.013H5.986c-.152.01-.303.017-.455.026-.747.043-1.49.123-2.193.4-1.336.53-2.3 1.452-2.865 2.78-.192.448-.292.925-.363 1.408-.056.392-.088.785-.1 1.18 0 .032-.007.062-.01.093v12.223c.01.14.017.283.027.424.05.815.154 1.624.497 2.373.65 1.42 1.738 2.353 3.234 2.801.42.127.856.187 1.293.228.555.053 1.11.06 1.667.06h11.03a12.5 12.5 0 0 0 1.57-.1c.822-.106 1.596-.35 2.296-.81a5.046 5.046 0 0 0 1.88-2.207c.186-.42.293-.87.37-1.324.113-.675.138-1.358.137-2.04-.002-3.8 0-7.595-.003-11.393zm-6.423 3.99v5.712c0 .417-.058.827-.244 1.206-.29.59-.76.962-1.388 1.14-.35.1-.706.157-1.07.173-.95.042-1.8-.335-2.22-1.175-.352-.7-.342-1.432.07-2.1.347-.564.89-.867 1.51-1.016.478-.115.965-.19 1.45-.27.376-.063.614-.278.676-.656a.628.628 0 0 0 .01-.14V8.32c0-.397-.05-.457-.442-.378l-5.04 1.03c-.088.018-.14.063-.168.153a.96.96 0 0 0-.023.252v7.396c0 .398-.05.79-.216 1.155-.31.676-.842 1.056-1.564 1.208-.384.08-.772.112-1.16.082-.727-.06-1.341-.344-1.727-.996-.352-.594-.336-1.222.016-1.824.307-.525.792-.848 1.375-1.01.44-.123.89-.21 1.342-.294.416-.077.66-.303.705-.728a.55.55 0 0 0 .005-.08V8.05c0-.48.1-.6.564-.696l6.836-1.46c.147-.03.296-.057.445-.063.392-.015.575.147.575.543v3.74z"/></svg>
+              </a>
+              <a href="https://www.melon.com/album/detail.htm?albumId=11712365" target="_blank" rel="noopener" class="session-link" aria-label="Melon" title="Melon">
+                <svg viewBox="0 0 400 400"><path fill="currentColor" d="M82.15 0h235.7C363.48 0 400 36.52 400 82.15v235.7C400 363.48 363.48 400 317.85 400H82.15C36.52 400 0 363.48 0 317.85V82.15C0 36.52 36.52 0 82.15 0zm109.75 129.96c-55.68 0-100.82 45.14-100.82 100.83 0 55.68 45.14 100.82 100.82 100.82 55.68 0 100.82-45.14 100.82-100.82 0-55.69-45.14-100.83-100.82-100.83zm0 56.81c24.27 0 44.01 19.74 44.01 44.02 0 24.27-19.74 44.01-44.01 44.01-24.27 0-44.01-19.74-44.01-44.01 0-24.28 19.74-44.02 44.01-44.02zm137.7 -37.51c20.92 0 37.9 -16.95 37.9 -37.89 0 -20.93 -16.98 -37.9 -37.9 -37.9 -20.93 0 -37.9 16.97 -37.9 37.9 0 20.94 16.97 37.89 37.9 37.89z"/></svg>
+              </a>
+            </div>
+          </div>
+          <span class="session-release-type">Album</span>
+        </div>
+
+        <!-- 9. Get down -->
+        <div class="session-item">
+          <div class="session-role">Bass</div>
+          <div class="session-info">
+            <span class="session-release-title">Get down</span>
+            <span class="session-artist-name">라디오 939, Hakm(하킴) — HEADBUTTERS</span>
+            <div class="session-links">
+              <a href="https://open.spotify.com/track/3cV1tL8qqHMqBxwP5vt3n7" target="_blank" rel="noopener" class="session-link" aria-label="Spotify" title="Spotify">
+                <svg viewBox="0 0 24 24"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141 4.32-1.26 9.72-.6 13.44 1.62.42.18.6.78.3 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>
+              </a>
+              <a href="https://music.apple.com/kr/song/get-down/1794510773" target="_blank" rel="noopener" class="session-link" aria-label="Apple Music" title="Apple Music">
+                <svg viewBox="0 0 24 24"><path d="M23.994 6.124a9.23 9.23 0 0 0-.24-2.19c-.317-1.31-1.062-2.31-2.18-3.043a5.022 5.022 0 0 0-1.877-.726 10.496 10.496 0 0 0-1.564-.15c-.04-.003-.083-.01-.124-.013H5.986c-.152.01-.303.017-.455.026-.747.043-1.49.123-2.193.4-1.336.53-2.3 1.452-2.865 2.78-.192.448-.292.925-.363 1.408-.056.392-.088.785-.1 1.18 0 .032-.007.062-.01.093v12.223c.01.14.017.283.027.424.05.815.154 1.624.497 2.373.65 1.42 1.738 2.353 3.234 2.801.42.127.856.187 1.293.228.555.053 1.11.06 1.667.06h11.03a12.5 12.5 0 0 0 1.57-.1c.822-.106 1.596-.35 2.296-.81a5.046 5.046 0 0 0 1.88-2.207c.186-.42.293-.87.37-1.324.113-.675.138-1.358.137-2.04-.002-3.8 0-7.595-.003-11.393zm-6.423 3.99v5.712c0 .417-.058.827-.244 1.206-.29.59-.76.962-1.388 1.14-.35.1-.706.157-1.07.173-.95.042-1.8-.335-2.22-1.175-.352-.7-.342-1.432.07-2.1.347-.564.89-.867 1.51-1.016.478-.115.965-.19 1.45-.27.376-.063.614-.278.676-.656a.628.628 0 0 0 .01-.14V8.32c0-.397-.05-.457-.442-.378l-5.04 1.03c-.088.018-.14.063-.168.153a.96.96 0 0 0-.023.252v7.396c0 .398-.05.79-.216 1.155-.31.676-.842 1.056-1.564 1.208-.384.08-.772.112-1.16.082-.727-.06-1.341-.344-1.727-.996-.352-.594-.336-1.222.016-1.824.307-.525.792-.848 1.375-1.01.44-.123.89-.21 1.342-.294.416-.077.66-.303.705-.728a.55.55 0 0 0 .005-.08V8.05c0-.48.1-.6.564-.696l6.836-1.46c.147-.03.296-.057.445-.063.392-.015.575.147.575.543v3.74z"/></svg>
+              </a>
+              <a href="https://www.melon.com/album/detail.htm?albumId=11712365" target="_blank" rel="noopener" class="session-link" aria-label="Melon" title="Melon">
+                <svg viewBox="0 0 400 400"><path fill="currentColor" d="M82.15 0h235.7C363.48 0 400 36.52 400 82.15v235.7C400 363.48 363.48 400 317.85 400H82.15C36.52 400 0 363.48 0 317.85V82.15C0 36.52 36.52 0 82.15 0zm109.75 129.96c-55.68 0-100.82 45.14-100.82 100.83 0 55.68 45.14 100.82 100.82 100.82 55.68 0 100.82-45.14 100.82-100.82 0-55.69-45.14-100.83-100.82-100.83zm0 56.81c24.27 0 44.01 19.74 44.01 44.02 0 24.27-19.74 44.01-44.01 44.01-24.27 0-44.01-19.74-44.01-44.01 0-24.28 19.74-44.02 44.01-44.02zm137.7 -37.51c20.92 0 37.9 -16.95 37.9 -37.89 0 -20.93 -16.98 -37.9 -37.9 -37.9 -20.93 0 -37.9 16.97 -37.9 37.9 0 20.94 16.97 37.89 37.9 37.89z"/></svg>
+              </a>
+            </div>
+          </div>
+          <span class="session-release-type">Album</span>
+        </div>
+
+        <!-- 10. Notion -->
+        <div class="session-item">
+          <div class="session-role">Bass</div>
+          <div class="session-info">
+            <span class="session-release-title">Notion</span>
+            <span class="session-artist-name">라디오 939, Hakm(하킴) — HEADBUTTERS</span>
+            <div class="session-links">
+              <a href="https://open.spotify.com/track/2Ki9W0tYUY8JbEAGxC87Ju" target="_blank" rel="noopener" class="session-link" aria-label="Spotify" title="Spotify">
+                <svg viewBox="0 0 24 24"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141 4.32-1.26 9.72-.6 13.44 1.62.42.18.6.78.3 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>
+              </a>
+              <a href="https://music.apple.com/kr/song/notion/1794510775" target="_blank" rel="noopener" class="session-link" aria-label="Apple Music" title="Apple Music">
+                <svg viewBox="0 0 24 24"><path d="M23.994 6.124a9.23 9.23 0 0 0-.24-2.19c-.317-1.31-1.062-2.31-2.18-3.043a5.022 5.022 0 0 0-1.877-.726 10.496 10.496 0 0 0-1.564-.15c-.04-.003-.083-.01-.124-.013H5.986c-.152.01-.303.017-.455.026-.747.043-1.49.123-2.193.4-1.336.53-2.3 1.452-2.865 2.78-.192.448-.292.925-.363 1.408-.056.392-.088.785-.1 1.18 0 .032-.007.062-.01.093v12.223c.01.14.017.283.027.424.05.815.154 1.624.497 2.373.65 1.42 1.738 2.353 3.234 2.801.42.127.856.187 1.293.228.555.053 1.11.06 1.667.06h11.03a12.5 12.5 0 0 0 1.57-.1c.822-.106 1.596-.35 2.296-.81a5.046 5.046 0 0 0 1.88-2.207c.186-.42.293-.87.37-1.324.113-.675.138-1.358.137-2.04-.002-3.8 0-7.595-.003-11.393zm-6.423 3.99v5.712c0 .417-.058.827-.244 1.206-.29.59-.76.962-1.388 1.14-.35.1-.706.157-1.07.173-.95.042-1.8-.335-2.22-1.175-.352-.7-.342-1.432.07-2.1.347-.564.89-.867 1.51-1.016.478-.115.965-.19 1.45-.27.376-.063.614-.278.676-.656a.628.628 0 0 0 .01-.14V8.32c0-.397-.05-.457-.442-.378l-5.04 1.03c-.088.018-.14.063-.168.153a.96.96 0 0 0-.023.252v7.396c0 .398-.05.79-.216 1.155-.31.676-.842 1.056-1.564 1.208-.384.08-.772.112-1.16.082-.727-.06-1.341-.344-1.727-.996-.352-.594-.336-1.222.016-1.824.307-.525.792-.848 1.375-1.01.44-.123.89-.21 1.342-.294.416-.077.66-.303.705-.728a.55.55 0 0 0 .005-.08V8.05c0-.48.1-.6.564-.696l6.836-1.46c.147-.03.296-.057.445-.063.392-.015.575.147.575.543v3.74z"/></svg>
+              </a>
+              <a href="https://www.melon.com/album/detail.htm?albumId=11712365" target="_blank" rel="noopener" class="session-link" aria-label="Melon" title="Melon">
+                <svg viewBox="0 0 400 400"><path fill="currentColor" d="M82.15 0h235.7C363.48 0 400 36.52 400 82.15v235.7C400 363.48 363.48 400 317.85 400H82.15C36.52 400 0 363.48 0 317.85V82.15C0 36.52 36.52 0 82.15 0zm109.75 129.96c-55.68 0-100.82 45.14-100.82 100.83 0 55.68 45.14 100.82 100.82 100.82 55.68 0 100.82-45.14 100.82-100.82 0-55.69-45.14-100.83-100.82-100.83zm0 56.81c24.27 0 44.01 19.74 44.01 44.02 0 24.27-19.74 44.01-44.01 44.01-24.27 0-44.01-19.74-44.01-44.01 0-24.28 19.74-44.02 44.01-44.02zm137.7 -37.51c20.92 0 37.9 -16.95 37.9 -37.89 0 -20.93 -16.98 -37.9 -37.9 -37.9 -20.93 0 -37.9 16.97 -37.9 37.9 0 20.94 16.97 37.89 37.9 37.89z"/></svg>
+              </a>
+            </div>
+          </div>
+          <span class="session-release-type">Album</span>
+        </div>
+
+        <!-- 11. Mr.Officer -->
+        <div class="session-item">
+          <div class="session-role">Bass</div>
+          <div class="session-info">
+            <span class="session-release-title">Mr.Officer (feat. Bruno Champman)</span>
+            <span class="session-artist-name">라디오 939, Hakm(하킴) — HEADBUTTERS</span>
+            <div class="session-links">
+              <a href="https://open.spotify.com/track/3Mmt9JFvxcdMKDqWZ4aoEY" target="_blank" rel="noopener" class="session-link" aria-label="Spotify" title="Spotify">
+                <svg viewBox="0 0 24 24"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141 4.32-1.26 9.72-.6 13.44 1.62.42.18.6.78.3 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>
+              </a>
+              <a href="https://music.apple.com/kr/song/mr-officer-feat-bruno-champman/1794510780" target="_blank" rel="noopener" class="session-link" aria-label="Apple Music" title="Apple Music">
+                <svg viewBox="0 0 24 24"><path d="M23.994 6.124a9.23 9.23 0 0 0-.24-2.19c-.317-1.31-1.062-2.31-2.18-3.043a5.022 5.022 0 0 0-1.877-.726 10.496 10.496 0 0 0-1.564-.15c-.04-.003-.083-.01-.124-.013H5.986c-.152.01-.303.017-.455.026-.747.043-1.49.123-2.193.4-1.336.53-2.3 1.452-2.865 2.78-.192.448-.292.925-.363 1.408-.056.392-.088.785-.1 1.18 0 .032-.007.062-.01.093v12.223c.01.14.017.283.027.424.05.815.154 1.624.497 2.373.65 1.42 1.738 2.353 3.234 2.801.42.127.856.187 1.293.228.555.053 1.11.06 1.667.06h11.03a12.5 12.5 0 0 0 1.57-.1c.822-.106 1.596-.35 2.296-.81a5.046 5.046 0 0 0 1.88-2.207c.186-.42.293-.87.37-1.324.113-.675.138-1.358.137-2.04-.002-3.8 0-7.595-.003-11.393zm-6.423 3.99v5.712c0 .417-.058.827-.244 1.206-.29.59-.76.962-1.388 1.14-.35.1-.706.157-1.07.173-.95.042-1.8-.335-2.22-1.175-.352-.7-.342-1.432.07-2.1.347-.564.89-.867 1.51-1.016.478-.115.965-.19 1.45-.27.376-.063.614-.278.676-.656a.628.628 0 0 0 .01-.14V8.32c0-.397-.05-.457-.442-.378l-5.04 1.03c-.088.018-.14.063-.168.153a.96.96 0 0 0-.023.252v7.396c0 .398-.05.79-.216 1.155-.31.676-.842 1.056-1.564 1.208-.384.08-.772.112-1.16.082-.727-.06-1.341-.344-1.727-.996-.352-.594-.336-1.222.016-1.824.307-.525.792-.848 1.375-1.01.44-.123.89-.21 1.342-.294.416-.077.66-.303.705-.728a.55.55 0 0 0 .005-.08V8.05c0-.48.1-.6.564-.696l6.836-1.46c.147-.03.296-.057.445-.063.392-.015.575.147.575.543v3.74z"/></svg>
+              </a>
+              <a href="https://www.melon.com/album/detail.htm?albumId=11712365" target="_blank" rel="noopener" class="session-link" aria-label="Melon" title="Melon">
+                <svg viewBox="0 0 400 400"><path fill="currentColor" d="M82.15 0h235.7C363.48 0 400 36.52 400 82.15v235.7C400 363.48 363.48 400 317.85 400H82.15C36.52 400 0 363.48 0 317.85V82.15C0 36.52 36.52 0 82.15 0zm109.75 129.96c-55.68 0-100.82 45.14-100.82 100.83 0 55.68 45.14 100.82 100.82 100.82 55.68 0 100.82-45.14 100.82-100.82 0-55.69-45.14-100.83-100.82-100.83zm0 56.81c24.27 0 44.01 19.74 44.01 44.02 0 24.27-19.74 44.01-44.01 44.01-24.27 0-44.01-19.74-44.01-44.01 0-24.28 19.74-44.02 44.01-44.02zm137.7 -37.51c20.92 0 37.9 -16.95 37.9 -37.89 0 -20.93 -16.98 -37.9 -37.9 -37.9 -20.93 0 -37.9 16.97 -37.9 37.9 0 20.94 16.97 37.89 37.9 37.89z"/></svg>
+              </a>
+            </div>
+          </div>
+          <span class="session-release-type">Album</span>
+        </div>
+
+        <!-- 12. Notion remix -->
+        <div class="session-item">
+          <div class="session-role">Bass</div>
+          <div class="session-info">
+            <span class="session-release-title">Notion remix (feat. cwar, 이로한, 스카이민혁, untell, EK)</span>
+            <span class="session-artist-name">라디오 939, Hakm(하킴) — HEADBUTTERS</span>
+            <div class="session-links">
+              <a href="https://open.spotify.com/track/7qY3Iiv7cFr360IwH8egXV" target="_blank" rel="noopener" class="session-link" aria-label="Spotify" title="Spotify">
+                <svg viewBox="0 0 24 24"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141 4.32-1.26 9.72-.6 13.44 1.62.42.18.6.78.3 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>
+              </a>
+              <a href="https://music.apple.com/kr/song/notion-remix-feat-cwar-%EC%9D%B4%EB%A1%9C%ED%95%9C-%EC%8A%A4%EC%B9%B4%EC%9D%B4%EB%AF%BC%ED%98%81-untell-ek/1794510789" target="_blank" rel="noopener" class="session-link" aria-label="Apple Music" title="Apple Music">
+                <svg viewBox="0 0 24 24"><path d="M23.994 6.124a9.23 9.23 0 0 0-.24-2.19c-.317-1.31-1.062-2.31-2.18-3.043a5.022 5.022 0 0 0-1.877-.726 10.496 10.496 0 0 0-1.564-.15c-.04-.003-.083-.01-.124-.013H5.986c-.152.01-.303.017-.455.026-.747.043-1.49.123-2.193.4-1.336.53-2.3 1.452-2.865 2.78-.192.448-.292.925-.363 1.408-.056.392-.088.785-.1 1.18 0 .032-.007.062-.01.093v12.223c.01.14.017.283.027.424.05.815.154 1.624.497 2.373.65 1.42 1.738 2.353 3.234 2.801.42.127.856.187 1.293.228.555.053 1.11.06 1.667.06h11.03a12.5 12.5 0 0 0 1.57-.1c.822-.106 1.596-.35 2.296-.81a5.046 5.046 0 0 0 1.88-2.207c.186-.42.293-.87.37-1.324.113-.675.138-1.358.137-2.04-.002-3.8 0-7.595-.003-11.393zm-6.423 3.99v5.712c0 .417-.058.827-.244 1.206-.29.59-.76.962-1.388 1.14-.35.1-.706.157-1.07.173-.95.042-1.8-.335-2.22-1.175-.352-.7-.342-1.432.07-2.1.347-.564.89-.867 1.51-1.016.478-.115.965-.19 1.45-.27.376-.063.614-.278.676-.656a.628.628 0 0 0 .01-.14V8.32c0-.397-.05-.457-.442-.378l-5.04 1.03c-.088.018-.14.063-.168.153a.96.96 0 0 0-.023.252v7.396c0 .398-.05.79-.216 1.155-.31.676-.842 1.056-1.564 1.208-.384.08-.772.112-1.16.082-.727-.06-1.341-.344-1.727-.996-.352-.594-.336-1.222.016-1.824.307-.525.792-.848 1.375-1.01.44-.123.89-.21 1.342-.294.416-.077.66-.303.705-.728a.55.55 0 0 0 .005-.08V8.05c0-.48.1-.6.564-.696l6.836-1.46c.147-.03.296-.057.445-.063.392-.015.575.147.575.543v3.74z"/></svg>
+              </a>
+              <a href="https://www.melon.com/album/detail.htm?albumId=11712365" target="_blank" rel="noopener" class="session-link" aria-label="Melon" title="Melon">
+                <svg viewBox="0 0 400 400"><path fill="currentColor" d="M82.15 0h235.7C363.48 0 400 36.52 400 82.15v235.7C400 363.48 363.48 400 317.85 400H82.15C36.52 400 0 363.48 0 317.85V82.15C0 36.52 36.52 0 82.15 0zm109.75 129.96c-55.68 0-100.82 45.14-100.82 100.83 0 55.68 45.14 100.82 100.82 100.82 55.68 0 100.82-45.14 100.82-100.82 0-55.69-45.14-100.83-100.82-100.83zm0 56.81c24.27 0 44.01 19.74 44.01 44.02 0 24.27-19.74 44.01-44.01 44.01-24.27 0-44.01-19.74-44.01-44.01 0-24.28 19.74-44.02 44.01-44.02zm137.7 -37.51c20.92 0 37.9 -16.95 37.9 -37.89 0 -20.93 -16.98 -37.9 -37.9 -37.9 -20.93 0 -37.9 16.97 -37.9 37.9 0 20.94 16.97 37.89 37.9 37.89z"/></svg>
+              </a>
+            </div>
+          </div>
+          <span class="session-release-type">Album</span>
+        </div>
+
+        <!-- 13. Falling -->
+        <div class="session-item">
+          <div class="session-role">Bass</div>
+          <div class="session-info">
+            <span class="session-release-title">Falling</span>
+            <span class="session-artist-name">히즈이(hizui)</span>
+            <div class="session-links">
+              <a href="https://open.spotify.com/track/16KXStEGaCSBxCJ5iuKwtg" target="_blank" rel="noopener" class="session-link" aria-label="Spotify" title="Spotify">
+                <svg viewBox="0 0 24 24"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141 4.32-1.26 9.72-.6 13.44 1.62.42.18.6.78.3 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>
+              </a>
+              <a href="https://music.apple.com/kr/song/falling/1884128380" target="_blank" rel="noopener" class="session-link" aria-label="Apple Music" title="Apple Music">
+                <svg viewBox="0 0 24 24"><path d="M23.994 6.124a9.23 9.23 0 0 0-.24-2.19c-.317-1.31-1.062-2.31-2.18-3.043a5.022 5.022 0 0 0-1.877-.726 10.496 10.496 0 0 0-1.564-.15c-.04-.003-.083-.01-.124-.013H5.986c-.152.01-.303.017-.455.026-.747.043-1.49.123-2.193.4-1.336.53-2.3 1.452-2.865 2.78-.192.448-.292.925-.363 1.408-.056.392-.088.785-.1 1.18 0 .032-.007.062-.01.093v12.223c.01.14.017.283.027.424.05.815.154 1.624.497 2.373.65 1.42 1.738 2.353 3.234 2.801.42.127.856.187 1.293.228.555.053 1.11.06 1.667.06h11.03a12.5 12.5 0 0 0 1.57-.1c.822-.106 1.596-.35 2.296-.81a5.046 5.046 0 0 0 1.88-2.207c.186-.42.293-.87.37-1.324.113-.675.138-1.358.137-2.04-.002-3.8 0-7.595-.003-11.393zm-6.423 3.99v5.712c0 .417-.058.827-.244 1.206-.29.59-.76.962-1.388 1.14-.35.1-.706.157-1.07.173-.95.042-1.8-.335-2.22-1.175-.352-.7-.342-1.432.07-2.1.347-.564.89-.867 1.51-1.016.478-.115.965-.19 1.45-.27.376-.063.614-.278.676-.656a.628.628 0 0 0 .01-.14V8.32c0-.397-.05-.457-.442-.378l-5.04 1.03c-.088.018-.14.063-.168.153a.96.96 0 0 0-.023.252v7.396c0 .398-.05.79-.216 1.155-.31.676-.842 1.056-1.564 1.208-.384.08-.772.112-1.16.082-.727-.06-1.341-.344-1.727-.996-.352-.594-.336-1.222.016-1.824.307-.525.792-.848 1.375-1.01.44-.123.89-.21 1.342-.294.416-.077.66-.303.705-.728a.55.55 0 0 0 .005-.08V8.05c0-.48.1-.6.564-.696l6.836-1.46c.147-.03.296-.057.445-.063.392-.015.575.147.575.543v3.74z"/></svg>
+              </a>
+              <a href="https://www.melon.com/album/detail.htm?albumId=12912051" target="_blank" rel="noopener" class="session-link" aria-label="Melon" title="Melon">
+                <svg viewBox="0 0 400 400"><path fill="currentColor" d="M82.15 0h235.7C363.48 0 400 36.52 400 82.15v235.7C400 363.48 363.48 400 317.85 400H82.15C36.52 400 0 363.48 0 317.85V82.15C0 36.52 36.52 0 82.15 0zm109.75 129.96c-55.68 0-100.82 45.14-100.82 100.83 0 55.68 45.14 100.82 100.82 100.82 55.68 0 100.82-45.14 100.82-100.82 0-55.69-45.14-100.83-100.82-100.83zm0 56.81c24.27 0 44.01 19.74 44.01 44.02 0 24.27-19.74 44.01-44.01 44.01-24.27 0-44.01-19.74-44.01-44.01 0-24.28 19.74-44.02 44.01-44.02zm137.7 -37.51c20.92 0 37.9 -16.95 37.9 -37.89 0 -20.93 -16.98 -37.9 -37.9 -37.9 -20.93 0 -37.9 16.97 -37.9 37.9 0 20.94 16.97 37.89 37.9 37.89z"/></svg>
+              </a>
+            </div>
+          </div>
+          <span class="session-release-type">Single</span>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="container">
+      <div class="footer-bottom">
+        <span class="footer-name">0hnorin</span>
+        <span class="footer-copy">&copy; 2026 0hnorin. All rights reserved.</span>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const cursor = document.getElementById('cursor');
+    const ring = document.getElementById('cursorRing');
+    let mx = 0, my = 0, rx = 0, ry = 0;
+    document.addEventListener('mousemove', e => {
+      mx = e.clientX; my = e.clientY;
+      cursor.style.left = mx + 'px';
+      cursor.style.top = my + 'px';
+    });
+    function animRing() {
+      rx += (mx - rx) * 0.12;
+      ry += (my - ry) * 0.12;
+      ring.style.left = rx + 'px';
+      ring.style.top = ry + 'px';
+      requestAnimationFrame(animRing);
+    }
+    animRing();
+    document.querySelectorAll('a').forEach(a => {
+      a.addEventListener('mouseenter', () => ring.style.transform = 'translate(-50%,-50%) scale(1.6)');
+      a.addEventListener('mouseleave', () => ring.style.transform = 'translate(-50%,-50%) scale(1)');
+    });
+
+    const reveals = document.querySelectorAll('.reveal');
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach((e, i) => {
+        if (e.isIntersecting) {
+          setTimeout(() => e.target.classList.add('visible'), i * 80);
+        }
+      });
+    }, { threshold: 0.1 });
+    reveals.forEach(el => observer.observe(el));
+  </script>
+</body>
+</html>
